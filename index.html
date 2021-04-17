@@ -1,34 +1,119 @@
+<!DOCTYPE html>
 <html>
 	<head>
+		<link rel="icon" href="https://img.itch.zone/aW1nLzUwMjEwMTYucG5n/100x100%23/5Zda6q.png"></link>
+		<title>&shy;</title>
 		<style>
-			body {
-				width: 100%;
+			html {
+				display: flex;
 				height: 100%;
+				flex-direction: row;
+			}
+			body {
+				flex-grow: 1;
+				flex-shrink: 1;
+				flex-basis: 0;
+				overflow: hidden;
+				font-family: monospace;
+				font-size: xx-large;
+				white-space: pre-line;
+				user-select: none;
+				background-color: white;
+				display: flex;
 				margin: 0;
+				flex-direction: column;
+			}
+			div {
+				flex-grow: 1;
+				flex-shrink: 1;
+				flex-basis: 0;
 				display: flex;
 				flex-direction: row;
 			}
-			a {
-				flex: 1;
-				background-repeat: no-repeat;
-				background-size: auto 100%;
-				transition: 250ms;
-			}
-			body:hover > a:hover {
+			div:hover a:hover {
+				flex-grow: 10;
 				opacity: 1.0;
-				flex: 10;
 			}
-			body:hover > a {
+			div:hover a {
 				opacity: 0.5;
 			}
-			body:active > a {
-				flex: 0;
+			div:active a {
+				flex-grow: 0;
+			}
+			a {
+				flex-grow: 1;
+				flex-shrink: 1;
+				flex-basis: 0;
+				transition: 250ms;
+				min-width: 0%;
+				background-size: auto 100%;
+				background-repeat: no-repeat;
+				background-origin: padding-box;
+				background-clip: border-box;
+				background-attachment: scroll;
+				display: flex;
+				color: black;
+				text-decoration: none;
+				cursor: default;
+				flex-direction: row;
+			}
+			a:hover span {
+				transform: translate(0, 0%);
+			}
+			span {
+				flex-grow: 1;
+				flex-shrink: 1;
+				flex-basis: 0;
+				align-self: flex-end;
+				background-color: white;
+				text-align: center;
+				transition: 500ms;
+				transform: translate(0, 100%);
+			}
+			@media only screen and (max-width: 600px) {
+				div {
+					flex-direction: column;
+				}
+				a {
+					background-size: 100% auto;
+				}
+				a:hover span {
+					opacity: 1;
+					transform: translate(0, 0%);
+				}
+				span {
+					opacity: 0;
+					align-self: flex-start;
+					transform: translate(0, -100%);
+				}
 			}
 		</style>
 	</head>
 	<body>
-		<a style="background-image: url(https://img.itch.zone/aW1hZ2UvNTMzNjM2LzQ3MzA2MDYucG5n/original/zO2hz8.png); background-position: 0%;" href="https://itch.io/embed-upload/1834778"/>
-		<a style="background-image: url(https://img.itch.zone/aW1hZ2UvODQyODY2LzQ3MzA2MTUucG5n/original/zQ2J7o.png); background-position: 50%;" href="https://itch.io/embed-upload/3055608"/>
-		<a style="background-image: url(https://img.itch.zone/aW1hZ2UvODQxNDAzLzQ3MzA2MDEucG5n/original/Dl7U7D.png); background-position: 100%;" href="https://itch.io/embed-upload/3048005"/>
+		&nbsp;Lloyd Deng
+					
+		<div>
+			<a style="background-image: url(https://img.itch.zone/aW1nLzQ5NjQ2MzMuanBn/original/vSNZ5H.jpg); background-position: 0%;" href="https://itch.io/embed-upload/3141599">
+				<span>
+					Grapple Gang
+					2-4 players
+					
+				</span>
+			</a>
+			<a style="background-image: url(https://img.itch.zone/aW1nLzQ3MzA2MjMucG5n/original/mwEQOX.png); background-position: 50%;" href="https://itch.io/embed-upload/3055608">
+				<span>
+					Rat Trap Operator
+					1 player
+					
+				</span>
+			</a>
+			<a style="background-image: url(https://img.itch.zone/aW1nLzQ3MzA2MDAucG5n/original/icAp4Z.png); background-position: 100%;" href="https://itch.io/embed-upload/3048005">
+				<span>
+					Flappy Pong
+					2 players
+					
+				</span>
+			</a>
+		</div>
 	</body>
 </html>
