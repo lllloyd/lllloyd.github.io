@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<link rel="icon" href="favicon.png"></link>
-		<title>&shy;🕹</title>
+		<title>🕹</title>
 		<style>
 			html {
 				display: flex;
@@ -22,25 +22,49 @@
 				display: flex;
 				margin: 0;
 				flex-direction: column;
+				background-image: url('background.png');
+				background-position: center;
+  				background-repeat: no-repeat;
+  				background-size: cover;
+  				margin: 10px;
 			}
-			div {
+			.header-title {
+				background-color: white;
+				margin: 10px;
+				padding: 20px;
+				border-radius: 10px;
+				white-space: normal;
+				transition: 250ms;
+			}
+			.header-expand {
+				max-height: 0%;
+  				transition: 250ms;
+			}
+			.header-title:hover .header-expand {
+				max-height: 100%;
+			}
+			.card-container {
 				flex-grow: 1;
 				flex-shrink: 1;
 				flex-basis: 0;
 				display: flex;
 				flex-direction: row;
 			}
-			div:hover a:hover {
+			.card-container:hover .card-thumbnail:hover {
 				flex-grow: 10;
-				opacity: 1.0;
+				opacity: 1;
+				box-shadow: inset 0 -200px 100px -100px rgba(0, 0, 0, 0.5);
 			}
-			div:hover a {
+			.card-container:hover .card-thumbnail {
 				opacity: 0.5;
 			}
-			div:active a {
+			.card-container:active .card-thumbnail {
 				flex-grow: 0;
 			}
-			a {
+			.card-container:active .card-thumbnail:active {
+				flex-grow: 1;
+			}
+			.card-thumbnail {
 				flex-grow: 1;
 				flex-shrink: 1;
 				flex-basis: 0;
@@ -51,16 +75,19 @@
 				background-origin: padding-box;
 				background-clip: border-box;
 				background-attachment: scroll;
+				background-color: white;
 				display: flex;
 				color: black;
 				text-decoration: none;
 				cursor: default;
 				flex-direction: row;
+				margin: 10px;
+				border-radius: 10px;
 			}
-			a:hover span {
+			.card-thumbnail:hover .card-floater {
 				transform: translate(0, 0%);
 			}
-			span {
+			.card-floater {
 				flex-grow: 1;
 				flex-shrink: 1;
 				flex-basis: 0;
@@ -68,20 +95,22 @@
 				background-color: white;
 				text-align: center;
 				transition: 500ms;
-				transform: translate(0, 100%);
+				transform: translate(0, calc(40px + 100%));
+				margin: 20px;
+				border-radius: 10px;
 			}
 			@media only screen and (max-width: 600px) {
-				div {
+				.card-container {
 					flex-direction: column;
 				}
-				a {
+				.card-thumbnail {
 					background-size: 100% auto;
 				}
-				a:hover span {
+				.card-thumbnail:hover .card-floater {
 					opacity: 1;
 					transform: translate(0, 0%);
 				}
-				span {
+				.card-floater {
 					opacity: 0;
 					align-self: flex-start;
 					transform: translate(0, -100%);
@@ -90,25 +119,29 @@
 		</style>
 	</head>
 	<body>
-		&nbsp;Lloyd Deng
-					
-		<div>
-			<a style="background-image: url(grapple-gang/thumbnail.png); background-position: 0%;" href="grapple-gang/index.html">
-				<span>
+		<!-- <h1 class="header-title">
+			🕹
+			<div class="header-expand">
+				Video Gaemez
+			</div>
+		</h1> -->
+		<div class="card-container">
+			<a class="card-thumbnail" style="background-image: url(grapple-gang/thumbnail.png); background-position: 0%;" href="grapple-gang/index.html">
+				<span class="card-floater">
 					Grapple Gang
 					2-4 players
 					
 				</span>
 			</a>
-			<a style="background-image: url(rat-trap-operator/thumbnail.png); background-position: 50%;" href="rat-trap-operator/index.html">
-				<span>
+			<a class="card-thumbnail" style="background-image: url(rat-trap-operator/thumbnail.png); background-position: 50%;" href="rat-trap-operator/index.html">
+				<span class="card-floater">
 					Rat Trap Operator
 					1 player
 					
 				</span>
 			</a>
-			<a style="background-image: url(flappy-pong/thumbnail.png); background-position: 100%;" href="flappy-pong/index.html">
-				<span>
+			<a class="card-thumbnail" style="background-image: url(flappy-pong/thumbnail.png); background-position: 100%;" href="flappy-pong/index.html">
+				<span class="card-floater">
 					Flappy Pong
 					2 players
 					
