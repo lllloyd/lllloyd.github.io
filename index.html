@@ -5,6 +5,11 @@
 	<link rel="icon" href="favicon.png">
 	</link>
 	<title>🕹</title>
+	<meta http-equiv="Content-Security-Policy"
+		content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google.com">
+	<script type="module">
+		import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+	</script>
 	<style>
 		html {
 			display: flex;
