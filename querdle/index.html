@@ -142,7 +142,7 @@
                     break;
             }
         }
-        let clipboard = `${puzzleName} ${daysSinceFeb17} ${row}/${numTurns}\n\n${game}`;
+        let clipboard = `${puzzleName} #${daysSinceFeb17} ${row}/${numTurns}\n\n${game}`;
         navigator.clipboard.writeText(clipboard).then(function () {
             document.getElementById("copy").innerHTML = copiedString;
         }, function (err) {
