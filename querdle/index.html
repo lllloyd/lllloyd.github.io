@@ -116,6 +116,10 @@
         answer = params.get("q");
         window.history.replaceState({}, '', `${location.pathname}?${params}`);
     }
+    answer = btoa(answer);
+    params.set("q", answer);
+    window.history.replaceState({}, '', `${location.pathname}?${params}`);
+    answer = atob(answer);
     if (answer.length != 5) {
         document.getElementById("querdle").innerHTML = errString;
     }
