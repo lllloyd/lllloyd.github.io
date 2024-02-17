@@ -1,4 +1,6 @@
-<span id="lloydle">lloydle</span>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+<span id="lloydle">lloydle
+</span>
 <div id="wordle">
     <span id="00"></span>
     <span id="01"></span>
@@ -31,6 +33,9 @@
     <span id="53"></span>
     <span id="54"></span>
 </div>
+<button id="openKeyboard">tap for phone keyboard</button>
+<input id="hiddenInput">
+
 <style>
     body {
         margin: 0;
@@ -52,6 +57,20 @@
         transform: translate(-50%, -50%);
         width: 50vmin;
         height: 60vmin;
+    }
+
+    #openKeyboard {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #hiddenInput {
+        visibility: hidden;
+        position: absolute;
+        font-size: 16px;
+        top: 0
     }
 
     span {
@@ -78,6 +97,14 @@
 </style>
 
 <script>
+    //https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
+    document.getElementById('openKeyboard').addEventListener('click', function () {
+        var inputElement = document.getElementById('hiddenInput');
+        inputElement.style.visibility = 'visible'; // unhide the input
+        inputElement.focus(); // focus on it so keyboard pops
+        inputElement.style.visibility = 'hidden'; // hide it again
+    });
+
     function copy(text) {
         let feb16 = new Date(2024, 1, 16);
         let today = new Date();
@@ -139,7 +166,6 @@ ${game}`
     let clip = "bbbbb\n";
     let guess = "";
     let answer = "lloyd";
-
     document.addEventListener("keydown", function onPress(event) {
         if (event.key === "Backspace") {
             guess = guess.slice(0, -1);
