@@ -1,5 +1,5 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-<span id="lloydle">lloydle
+<span id="querdle">querdle
 </span>
 <div id="wordle">
     <span id="00"></span>
@@ -42,7 +42,7 @@
         background-color: #121213;
     }
 
-    #lloydle {
+    #querdle {
         font-size: 20px;
     }
 
@@ -97,6 +97,25 @@
 </style>
 
 <script>
+    
+    let row = 0;
+    let board = "";
+    let clip = "bbbbb\n";
+    let guess = "";
+    let params = new URLSearchParams(location.search);
+    let answer = params.get("q");
+    if (!answer) {
+        params.set("q", "lloyd");
+        answer = params.get("q");
+        window.history.replaceState({}, '', `${location.pathname}?${params}`);
+    }
+    if (answer.length != 5) {
+        document.getElementById("querdle").innerHTML = "somethings wrong with your url";
+    }
+    else {
+        document.getElementById("querdle").innerHTML = `${answer}le`;
+    }
+
     //https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
     document.getElementById('openKeyboard').addEventListener('click', function () {
         var inputElement = document.getElementById('hiddenInput');
@@ -108,7 +127,7 @@
     function copy(text) {
         let feb16 = new Date(2024, 1, 16);
         let today = new Date();
-        const daysSinceFeb16 = Math.round(Math.abs((feb16 - today) / (24 * 60 * 60 * 1000)));
+        let daysSinceFeb16 = Math.round(Math.abs((feb16 - today) / (24 * 60 * 60 * 1000)));
         let game = "";
 
         for (c of text) {
@@ -128,7 +147,7 @@
                     break;
             }
         }
-        let clipboard = `lloydle ${daysSinceFeb16} ${row}/6
+        let clipboard = `${answer}le ${daysSinceFeb16} ${row}/6
 
 ${game}`
         navigator.clipboard.writeText(clipboard).then(function () {
@@ -151,21 +170,16 @@ ${game}`
             copy(board)
         };
         copybutton.appendChild(document.createTextNode("copy to clipboard"));
-        let lloydle = document.getElementById("lloydle");
+        let querdle = document.getElementById("querdle");
         if (win) {
-            lloydle.innerHTML = `wow good job&nbsp;`;
+            querdle.innerHTML = `wow good job&nbsp;`;
         }
         else {
-            lloydle.innerHTML = `um you lose&nbsp;`;
+            querdle.innerHTML = `um you lose&nbsp;`;
         }
-        lloydle.appendChild(copybutton);
+        querdle.appendChild(copybutton);
     }
 
-    let row = 0;
-    let board = "";
-    let clip = "bbbbb\n";
-    let guess = "";
-    let answer = "lloyd";
     document.addEventListener("keydown", function onPress(event) {
         if (event.key === "Backspace") {
             guess = guess.slice(0, -1);
