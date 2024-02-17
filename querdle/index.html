@@ -1,0 +1,195 @@
+<span id="lloydle">lloydle</span>
+<div id="wordle">
+    <span id="00"></span>
+    <span id="01"></span>
+    <span id="02"></span>
+    <span id="03"></span>
+    <span id="04"></span>
+    <span id="10"></span>
+    <span id="11"></span>
+    <span id="12"></span>
+    <span id="13"></span>
+    <span id="14"></span>
+    <span id="20"></span>
+    <span id="21"></span>
+    <span id="22"></span>
+    <span id="23"></span>
+    <span id="24"></span>
+    <span id="30"></span>
+    <span id="31"></span>
+    <span id="32"></span>
+    <span id="33"></span>
+    <span id="34"></span>
+    <span id="40"></span>
+    <span id="41"></span>
+    <span id="42"></span>
+    <span id="43"></span>
+    <span id="44"></span>
+    <span id="50"></span>
+    <span id="51"></span>
+    <span id="52"></span>
+    <span id="53"></span>
+    <span id="54"></span>
+</div>
+<style>
+    body {
+        margin: 0;
+        background-color: #121213;
+    }
+
+    #lloydle {
+        font-size: 20px;
+    }
+
+    #wordle {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50vmin;
+        height: 60vmin;
+    }
+
+    span {
+        display: block;
+        border: 2px solid rgb(58, 58, 60);
+        color: #f8f8f8;
+        font-family: monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .green {
+        background-color: #538d4e;
+    }
+
+    .yellow {
+        background-color: #b59f3b;
+    }
+
+    .grey {
+        background-color: #212121;
+    }
+</style>
+
+<script>
+    function copy(text) {
+        let feb16 = new Date(2024, 1, 16);
+        let today = new Date();
+        const daysSinceFeb16 = Math.round(Math.abs((feb16 - today) / (24 * 60 * 60 * 1000)));
+        let game = "";
+
+        for (c of text) {
+            console.log(c);
+            switch (c) {
+                case 'b':
+                    game += '⬛';
+                    break;
+                case 'y':
+                    game += '🟨';
+                    break;
+                case 'g':
+                    game += '🟩';
+                    break;
+                default:
+                    game += c;
+                    break;
+            }
+        }
+        let clipboard = `lloydle ${daysSinceFeb16} ${row}/6
+
+${game}`
+        navigator.clipboard.writeText(clipboard).then(function () {
+            console.log('copied');
+        }, function (err) {
+            console.error('.', err);
+        });
+    }
+
+    function replaceChar(index, char, string) {
+        string = string.split('');
+        string[index] = char;
+        string = string.join('');
+        return string;
+    }
+
+    function gameOver(win, text) {
+        let copybutton = document.createElement("button");
+        copybutton.onclick = function () {
+            copy(board)
+        };
+        copybutton.appendChild(document.createTextNode("copy to clipboard"));
+        let lloydle = document.getElementById("lloydle");
+        if (win) {
+            lloydle.innerHTML = `wow good job&nbsp;`;
+        }
+        else {
+            lloydle.innerHTML = `um you lose&nbsp;`;
+        }
+        lloydle.appendChild(copybutton);
+    }
+
+    let row = 0;
+    let board = "";
+    let clip = "bbbbb\n";
+    let guess = "";
+    let answer = "lloyd";
+
+    document.addEventListener("keydown", function onPress(event) {
+        if (event.key === "Backspace") {
+            guess = guess.slice(0, -1);
+        }
+        else if (event.key === "Enter") {
+            let mess = guess;
+            let amswer = answer;
+            let mlip = clip;
+            if (guess.length === 5) {
+                for (let i = 0; i < guess.length; i++) {
+                    if (guess[i] === answer[i]) {
+                        document.getElementById(row.toString() + i.toString()).classList.add("green");
+                        mess = replaceChar(i, '.', mess);
+                        amswer = replaceChar(i, '.', amswer);
+                        mlip = replaceChar(i, 'g', mlip);
+                    }
+                    else
+                        document.getElementById(row.toString() + i.toString()).classList.add("grey");
+                }
+                for (let i = 0; i < mess.length; i++) {
+                    for (let j = 0; j < amswer.length; j++) {
+                        if (mess[i] === amswer[j] && mess[i] !== '.') {
+                            document.getElementById(row.toString() + i.toString()).classList.remove("grey");
+                            document.getElementById(row.toString() + i.toString()).classList.add("yellow");
+                            mess = replaceChar(i, '.', mess);
+                            amswer = replaceChar(j, '.', amswer);
+                            mlip = replaceChar(i, 'y', mlip);
+                            break;
+                        }
+                    }
+                }
+                row++;
+                board += mlip;
+                if (mess === ".....") {
+                    gameOver(true, board);
+                }
+                else if (row === 6) {
+                    gameOver(false, board);
+                };
+                guess = "";
+            }
+        }
+        else if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
+            if (guess.length < 5)
+                guess += event.key.toLowerCase();
+        }
+        document.getElementById(row.toString() + '0').innerHTML = guess[0] ? guess[0] : "";
+        document.getElementById(row.toString() + '1').innerHTML = guess[1] ? guess[1] : "";
+        document.getElementById(row.toString() + '2').innerHTML = guess[2] ? guess[2] : "";
+        document.getElementById(row.toString() + '3').innerHTML = guess[3] ? guess[3] : "";
+        document.getElementById(row.toString() + '4').innerHTML = guess[4] ? guess[4] : "";
+    });
+</script>
