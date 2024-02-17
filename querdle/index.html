@@ -1,38 +1,10 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-<span id="querdle">querdle</span>
-<div id="wordle">
-    <span id="00"></span>
-    <span id="01"></span>
-    <span id="02"></span>
-    <span id="03"></span>
-    <span id="04"></span>
-    <span id="10"></span>
-    <span id="11"></span>
-    <span id="12"></span>
-    <span id="13"></span>
-    <span id="14"></span>
-    <span id="20"></span>
-    <span id="21"></span>
-    <span id="22"></span>
-    <span id="23"></span>
-    <span id="24"></span>
-    <span id="30"></span>
-    <span id="31"></span>
-    <span id="32"></span>
-    <span id="33"></span>
-    <span id="34"></span>
-    <span id="40"></span>
-    <span id="41"></span>
-    <span id="42"></span>
-    <span id="43"></span>
-    <span id="44"></span>
-    <span id="50"></span>
-    <span id="51"></span>
-    <span id="52"></span>
-    <span id="53"></span>
-    <span id="54"></span>
-</div>
-<button id="openKeyboard"></button>
+<div id="page">
+    <span id="title">querdle</span>
+    <div id="container">
+        <div id="game"></div>
+    </div>
+</div><button id="openKeyboard"></button>
 <input id="hiddenInput">
 
 <style>
@@ -41,22 +13,32 @@
         background-color: #121213;
     }
 
-    #querdle {
-        font-size: 24px;
+    #page {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
     }
 
-    #wordle {
+    #title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    #container {
+        overflow: auto;
+        flex-grow: 1;
+    }
+
+    #game {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(6, 1fr);
         gap: 10px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
         width: 50vmin;
         height: 60vmin;
         font-size: 20px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     #openKeyboard {
@@ -70,7 +52,7 @@
         visibility: hidden;
         position: absolute;
         font-size: 16px;
-        top: 0
+        top: 0;
     }
 
     span {
@@ -97,54 +79,54 @@
 </style>
 
 <script>
-    let winString = `wow good job&nbsp;`;
-    let loseString = `um you lose&nbsp;`;
-    let errString = "somethings wrong with your url";
-    let copyString = "copy to clipboard";
-    let copiedString = "copied!";
-    let keyboardString = "tap for phone keyboard";
-    let defaultAnswer = "lloyd";
+    function buildBoard(x, y) {
+        let game = document.getElementById("game");
+        for (let i = 0; i < y; i++) {
+            for (let j = 0; j < x; j++) {
+                let span = document.createElement("span");
+                span.id = (`${i}${j}`);
+                game.appendChild(span);
+            }
+        }
+        game.style.setProperty("grid-template-columns", `repeat(${x}, 1fr)`);
+        game.style.setProperty("grid-template-rows", `repeat(${y}, 1fr)`);
+        game.style.setProperty("width", `${x}0vmin`);
+        game.style.setProperty("height", `${y}0vmin`);
+    }
 
-    let row = 0;
-    let board = "";
-    let clip = "bbbbb\n";
-    let guess = "";
-    let params = new URLSearchParams(location.search);
-    let answer = params.get("q");
-    if (!answer) {
-        params.set("q", defaultAnswer);
-        answer = params.get("q");
+    function hideQueryParam(param) {
+        let answer = btoa(param);
+        params.set("q", answer);
         window.history.replaceState({}, '', `${location.pathname}?${params}`);
-    }
-    answer = btoa(answer);
-    params.set("q", answer);
-    window.history.replaceState({}, '', `${location.pathname}?${params}`);
-    answer = atob(answer);
-    if (answer.length != 5) {
-        document.getElementById("querdle").innerHTML = errString;
-    }
-    else {
-        document.getElementById("querdle").innerHTML = `${answer}le`;
+        // answer = atob(answer);
     }
 
-    //https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
-    let openKeyboard = document.getElementById('openKeyboard');
-    openKeyboard.innerHTML = keyboardString;
-    openKeyboard.addEventListener('click', function () {
-        var inputElement = document.getElementById('hiddenInput');
-        inputElement.style.visibility = 'visible'; // unhide the input
-        inputElement.focus(); // focus on it so keyboard pops
-        inputElement.style.visibility = 'hidden'; // hide it again
-    });
+    function mobileKeyboard(keyboardString) {
+        // https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
+        let openKeyboard = document.getElementById('openKeyboard');
+        openKeyboard.innerHTML = keyboardString;
+        openKeyboard.addEventListener('click', function () {
+            var inputElement = document.getElementById('hiddenInput');
+            inputElement.style.visibility = 'visible'; // unhide the input
+            inputElement.focus(); // focus on it so keyboard pops
+            inputElement.style.visibility = 'hidden'; // hide it again
+        });
+    }
+
+    function replaceChar(index, char, string) {
+        string = string.split('');
+        string[index] = char;
+        string = string.join('');
+        return string;
+    }
 
     function copy(text) {
-        let feb16 = new Date(2024, 1, 16);
+        let feb17 = new Date(2024, 1, 17);
         let today = new Date();
-        let daysSinceFeb16 = Math.round(Math.abs((feb16 - today) / (24 * 60 * 60 * 1000)));
+        let daysSinceFeb17 = 1 + Math.round(Math.abs((feb17 - today) / (24 * 60 * 60 * 1000)));
         let game = "";
 
         for (c of text) {
-            console.log(c);
             switch (c) {
                 case 'b':
                     game += '⬛';
@@ -160,9 +142,7 @@
                     break;
             }
         }
-        let clipboard = `${answer}le ${daysSinceFeb16} ${row}/6
-
-${game}`
+        let clipboard = `${puzzleName} ${daysSinceFeb17} ${row}/${numTurns}\n\n${game}`;
         navigator.clipboard.writeText(clipboard).then(function () {
             document.getElementById("copy").innerHTML = copiedString;
         }, function (err) {
@@ -170,29 +150,54 @@ ${game}`
         });
     }
 
-    function replaceChar(index, char, string) {
-        string = string.split('');
-        string[index] = char;
-        string = string.join('');
-        return string;
-    }
-
     function gameOver(win, text) {
         let copyButton = document.createElement("button");
         copyButton.id = "copy";
         copyButton.onclick = function () {
-            copy(board)
+            copy(text);
         };
         copyButton.appendChild(document.createTextNode(copyString));
-        let querdle = document.getElementById("querdle");
+        let title = document.getElementById("title");
         if (win) {
-            querdle.innerHTML = winString;
+            title.innerHTML = winString;
         }
         else {
-            querdle.innerHTML = loseString;
+            title.innerHTML = loseString;
         }
-        querdle.appendChild(copyButton);
+        title.appendChild(copyButton);
     }
+
+    let defaultAnswer = "lloyd";
+    let puzzleName = "";
+    let winString = `wow good job&nbsp;`;
+    let loseString = `um you lose&nbsp;`;
+    let copyString = "copy to clipboard";
+    let copiedString = "copied!";
+    let keyboardString = "tap for phone keyboard";
+
+    let row = 0;
+    let guess = "";
+    let params = new URLSearchParams(location.search);
+    let answer = params.get("q");
+    if (!answer) {
+        params.set("q", defaultAnswer);
+        answer = params.get("q");
+        window.history.replaceState({}, '', `${location.pathname}?${params}`);
+    }
+    let numTurns = answer.length + 1;
+    let board = "";
+    let clip = `${'b'.repeat(answer.length)}\n`;
+    buildBoard(answer.length, numTurns);
+
+    if (answer === defaultAnswer)
+        puzzleName = `${defaultAnswer}le`;
+    else {
+        puzzleName = `${'?'.repeat(answer.length)}le`;
+    }
+    document.getElementById("title").innerHTML = puzzleName;
+
+    hideQueryParam(answer);
+    mobileKeyboard(keyboardString);
 
     document.addEventListener("keydown", function onPress(event) {
         if (event.key === "Backspace") {
@@ -202,24 +207,24 @@ ${game}`
             let mess = guess;
             let amswer = answer;
             let mlip = clip;
-            if (guess.length === 5) {
+            if (guess.length === answer.length) {
                 for (let i = 0; i < guess.length; i++) {
                     if (guess[i] === answer[i]) {
-                        document.getElementById(row.toString() + i.toString()).classList.add("green");
+                        document.getElementById(`${row.toString()}${i}`).classList.add("green");
                         mess = replaceChar(i, '.', mess);
                         amswer = replaceChar(i, '.', amswer);
                         mlip = replaceChar(i, 'g', mlip);
                     }
                     else
-                        document.getElementById(row.toString() + i.toString()).classList.add("grey");
+                        document.getElementById(`${row.toString()}${i}`).classList.add("grey");
                 }
                 for (let i = 0; i < mess.length; i++) {
                     for (let j = 0; j < amswer.length; j++) {
                         if (mess[i] === amswer[j] && mess[i] !== '.') {
-                            document.getElementById(row.toString() + i.toString()).classList.remove("grey");
-                            document.getElementById(row.toString() + i.toString()).classList.add("yellow");
-                            mess = replaceChar(i, '.', mess);
-                            amswer = replaceChar(j, '.', amswer);
+                            document.getElementById(`${row.toString()}${i}`).classList.remove("grey");
+                            document.getElementById(`${row.toString()}${i}`).classList.add("yellow");
+                            mess = replaceChar(i, ',', mess);
+                            amswer = replaceChar(j, ',', amswer);
                             mlip = replaceChar(i, 'y', mlip);
                             break;
                         }
@@ -227,23 +232,21 @@ ${game}`
                 }
                 row++;
                 board += mlip;
-                if (mess === ".....") {
+                if (mess === '.'.repeat(answer.length)) {
                     gameOver(true, board);
                 }
-                else if (row === 6) {
+                else if (row === numTurns) {
                     gameOver(false, board);
                 };
                 guess = "";
             }
         }
-        else if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
-            if (guess.length < 5)
+        else if (event.key.length === 1 && event.key !== " ") {
+            if (guess.length < answer.length)
                 guess += event.key.toLowerCase();
         }
-        document.getElementById(row.toString() + '0').innerHTML = guess[0] ? guess[0] : "";
-        document.getElementById(row.toString() + '1').innerHTML = guess[1] ? guess[1] : "";
-        document.getElementById(row.toString() + '2').innerHTML = guess[2] ? guess[2] : "";
-        document.getElementById(row.toString() + '3').innerHTML = guess[3] ? guess[3] : "";
-        document.getElementById(row.toString() + '4').innerHTML = guess[4] ? guess[4] : "";
+        for (let i = 0; i < answer.length; i++) {
+            document.getElementById(`${row.toString()}${i}`).innerHTML = guess[i] ? guess[i] : "";
+        }
     });
 </script>
