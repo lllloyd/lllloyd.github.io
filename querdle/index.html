@@ -1,6 +1,5 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-<span id="querdle">querdle
-</span>
+<span id="querdle">querdle</span>
 <div id="wordle">
     <span id="00"></span>
     <span id="01"></span>
@@ -33,7 +32,7 @@
     <span id="53"></span>
     <span id="54"></span>
 </div>
-<button id="openKeyboard">tap for phone keyboard</button>
+<button id="openKeyboard"></button>
 <input id="hiddenInput">
 
 <style>
@@ -43,7 +42,7 @@
     }
 
     #querdle {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     #wordle {
@@ -57,6 +56,7 @@
         transform: translate(-50%, -50%);
         width: 50vmin;
         height: 60vmin;
+        font-size: 20px;
     }
 
     #openKeyboard {
@@ -97,7 +97,14 @@
 </style>
 
 <script>
-    
+    let winString = `wow good job&nbsp;`;
+    let loseString = `um you lose&nbsp;`;
+    let errString = "somethings wrong with your url";
+    let copyString = "copy to clipboard";
+    let copiedString = "copied!";
+    let keyboardString = "tap for phone keyboard";
+    let defaultAnswer = "lloyd";
+
     let row = 0;
     let board = "";
     let clip = "bbbbb\n";
@@ -105,19 +112,21 @@
     let params = new URLSearchParams(location.search);
     let answer = params.get("q");
     if (!answer) {
-        params.set("q", "lloyd");
+        params.set("q", defaultAnswer);
         answer = params.get("q");
         window.history.replaceState({}, '', `${location.pathname}?${params}`);
     }
     if (answer.length != 5) {
-        document.getElementById("querdle").innerHTML = "somethings wrong with your url";
+        document.getElementById("querdle").innerHTML = errString;
     }
     else {
         document.getElementById("querdle").innerHTML = `${answer}le`;
     }
 
     //https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
-    document.getElementById('openKeyboard').addEventListener('click', function () {
+    let openKeyboard = document.getElementById('openKeyboard');
+    openKeyboard.innerHTML = keyboardString;
+    openKeyboard.addEventListener('click', function () {
         var inputElement = document.getElementById('hiddenInput');
         inputElement.style.visibility = 'visible'; // unhide the input
         inputElement.focus(); // focus on it so keyboard pops
@@ -151,9 +160,9 @@
 
 ${game}`
         navigator.clipboard.writeText(clipboard).then(function () {
-            console.log('copied');
+            document.getElementById("copy").innerHTML = copiedString;
         }, function (err) {
-            console.error('.', err);
+            document.getElementById("copy").innerHTML = err;
         });
     }
 
@@ -165,19 +174,20 @@ ${game}`
     }
 
     function gameOver(win, text) {
-        let copybutton = document.createElement("button");
-        copybutton.onclick = function () {
+        let copyButton = document.createElement("button");
+        copyButton.id = "copy";
+        copyButton.onclick = function () {
             copy(board)
         };
-        copybutton.appendChild(document.createTextNode("copy to clipboard"));
+        copyButton.appendChild(document.createTextNode(copyString));
         let querdle = document.getElementById("querdle");
         if (win) {
-            querdle.innerHTML = `wow good job&nbsp;`;
+            querdle.innerHTML = winString;
         }
         else {
-            querdle.innerHTML = `um you lose&nbsp;`;
+            querdle.innerHTML = loseString;
         }
-        querdle.appendChild(copybutton);
+        querdle.appendChild(copyButton);
     }
 
     document.addEventListener("keydown", function onPress(event) {
