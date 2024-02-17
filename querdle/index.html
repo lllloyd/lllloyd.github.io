@@ -180,10 +180,11 @@
     let params = new URLSearchParams(location.search);
     let answer = params.get("q");
     if (!answer) {
-        params.set("q", defaultAnswer);
+        params.set("q", btoa(defaultAnswer));
         answer = params.get("q");
         window.history.replaceState({}, '', `${location.pathname}?${params}`);
     }
+    answer = atob(answer);
     let numTurns = answer.length + 1;
     let board = "";
     let clip = `${'b'.repeat(answer.length)}\n`;
@@ -196,7 +197,7 @@
     }
     document.getElementById("title").innerHTML = puzzleName;
 
-    hideQueryParam(answer);
+    // hideQueryParam(answer);
     mobileKeyboard(keyboardString);
 
     document.addEventListener("keydown", function onPress(event) {
