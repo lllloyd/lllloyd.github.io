@@ -1,11 +1,11 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 <div id="page">
-    <span id="title">querdle</span>
+    <span id="title"></span>
     <div id="container">
         <div id="game"></div>
     </div>
-</div><button id="openKeyboard"></button>
-<input id="hiddenInput">
+</div>
+<input value="tap for phone keyboard">
 
 <style>
     body {
@@ -41,18 +41,16 @@
         margin-right: auto;
     }
 
-    #openKeyboard {
+    input {
         position: absolute;
         bottom: 0;
         left: 50%;
         transform: translate(-50%, -50%);
+        text-align: center;
     }
 
-    #hiddenInput {
-        visibility: hidden;
-        position: absolute;
-        font-size: 16px;
-        top: 0;
+    input:focus {
+        bottom: 100%;
     }
 
     span {
@@ -93,26 +91,7 @@
         game.style.setProperty("width", `${x}0vmin`);
         game.style.setProperty("height", `${y}0vmin`);
     }
-
-    function hideQueryParam(param) {
-        let answer = btoa(param);
-        params.set("q", answer);
-        window.history.replaceState({}, '', `${location.pathname}?${params}`);
-        // answer = atob(answer);
-    }
-
-    function mobileKeyboard(keyboardString) {
-        // https://stackoverflow.com/questions/4609765/manually-triggering-the-iphone-ipad-ipod-keyboard-from-javascript
-        let openKeyboard = document.getElementById('openKeyboard');
-        openKeyboard.innerHTML = keyboardString;
-        openKeyboard.addEventListener('click', function () {
-            var inputElement = document.getElementById('hiddenInput');
-            inputElement.style.visibility = 'visible'; // unhide the input
-            inputElement.focus(); // focus on it so keyboard pops
-            inputElement.style.visibility = 'hidden'; // hide it again
-        });
-    }
-
+    
     function replaceChar(index, char, string) {
         string = string.split('');
         string[index] = char;
@@ -196,9 +175,6 @@
         puzzleName = `${'?'.repeat(answer.length)}le`;
     }
     document.getElementById("title").innerHTML = puzzleName;
-
-    // hideQueryParam(answer);
-    mobileKeyboard(keyboardString);
 
     document.addEventListener("keydown", function onPress(event) {
         if (event.key === "Backspace") {
