@@ -77,21 +77,26 @@
 </style>
 
 <script>
-    function buildBoard(x, y) {
+    function addRow(width, y) {
         let game = document.getElementById("game");
-        for (let i = 0; i < y; i++) {
-            for (let j = 0; j < x; j++) {
-                let span = document.createElement("span");
-                span.id = (`${i}${j}`);
-                game.appendChild(span);
-            }
+        for (let x = 0; x < width; x++) {
+            let span = document.createElement("span");
+            span.id = (`${y}${x}`);
+            game.appendChild(span);
+            game.style.setProperty("grid-template-rows", `repeat(${y + 1}, 1fr)`);
+            game.style.setProperty("height", `${y + 1}0vmin`);
         }
-        game.style.setProperty("grid-template-columns", `repeat(${x}, 1fr)`);
-        game.style.setProperty("grid-template-rows", `repeat(${y}, 1fr)`);
-        game.style.setProperty("width", `${x}0vmin`);
-        game.style.setProperty("height", `${y}0vmin`);
     }
-    
+
+    function buildBoard(width, height) {
+        let game = document.getElementById("game");
+        for (let y = 0; y < height; y++) {
+            addRow(width, y);
+        }
+        game.style.setProperty("grid-template-columns", `repeat(${width}, 1fr)`);
+        game.style.setProperty("width", `${width}0vmin`);
+    }
+
     function replaceChar(index, char, string) {
         string = string.split('');
         string[index] = char;
@@ -139,17 +144,34 @@
         let title = document.getElementById("title");
         if (win) {
             title.innerHTML = winString;
+            title.appendChild(copyButton);
         }
         else {
-            title.innerHTML = loseString;
+            title.innerHTML = loseOptionString;
+            let dieButton = document.createElement("button");
+            let span = document.createElement("span");
+            let liveButton = document.createElement("button");
+            dieButton.appendChild(document.createTextNode("yes"));
+            liveButton.appendChild(document.createTextNode("no"));
+            title.appendChild(dieButton);
+            title.appendChild(span);
+            title.appendChild(liveButton);
+            dieButton.onclick = function () {
+                title.innerHTML = loseString;
+                title.appendChild(copyButton);
+            };
+            liveButton.onclick = function () {
+                addRow(answer.length, numTurns, numTurns + 1);
+                numTurns++;
+            };
         }
-        title.appendChild(copyButton);
     }
 
     let defaultAnswer = "lloyd";
     let puzzleName = "";
     let winString = `wow good job&nbsp;`;
-    let loseString = `um you lose&nbsp;`;
+    let loseOptionString = `do you want to lose&nbsp;`;
+    let loseString = `ok&nbsp;`;
     let copyString = "copy to clipboard";
     let copiedString = "copied!";
     let keyboardString = "tap for phone keyboard";
