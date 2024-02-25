@@ -71,16 +71,25 @@
         background-color: #b59f3b;
     }
 
+    .red {
+        background-color: #922517
+    }
+
     .grey {
         background-color: #212121;
     }
+
+    .black {}
 </style>
 
 <script>
-    function addRow(width, y) {
+    function addRow(answer, y) {
         let game = document.getElementById("game");
-        for (let x = 0; x < width; x++) {
+        for (let x = 0; x < answer.length; x++) {
             let span = document.createElement("span");
+            if (answer[x] === ' ') {
+                span.style.setProperty("border", "none");
+            }
             span.id = (`${y}${x}`);
             game.appendChild(span);
             game.style.setProperty("grid-template-rows", `repeat(${y + 1}, 1fr)`);
@@ -88,13 +97,13 @@
         }
     }
 
-    function buildBoard(width, height) {
+    function buildBoard(answer) {
         let game = document.getElementById("game");
-        for (let y = 0; y < height; y++) {
-            addRow(width, y);
+        for (let y = 0; y < numTurns; y++) {
+            addRow(answer, y);
         }
-        game.style.setProperty("grid-template-columns", `repeat(${width}, 1fr)`);
-        game.style.setProperty("width", `${width}0vmin`);
+        game.style.setProperty("grid-template-columns", `repeat(${answer.length}, 1fr)`);
+        game.style.setProperty("width", `${answer.length}0vmin`);
     }
 
     function replaceChar(index, char, string) {
@@ -104,41 +113,68 @@
         return string;
     }
 
-    function copy(text) {
+    function copyToClipBoard() {
         let feb17 = new Date(2024, 1, 17);
         let today = new Date();
         let daysSinceFeb17 = 1 + Math.round(Math.abs((feb17 - today) / (24 * 60 * 60 * 1000)));
-        let game = "";
+        let emojiClipBoard = "";
 
-        for (c of text) {
+        for (c of clipBoard) {
             switch (c) {
-                case 'b':
-                    game += '⬛';
+                case internalGreen:
+                    emojiClipBoard += '🟩';
                     break;
-                case 'y':
-                    game += '🟨';
+                case internalYellow:
+                    emojiClipBoard += '🟨';
                     break;
-                case 'g':
-                    game += '🟩';
+                case internalRed:
+                    emojiClipBoard += '🟥';
+                    break;
+                case ' ':
+                    emojiClipBoard += ' ';
+                    break;
+                case '\n':
+                    emojiClipBoard += '\n';
                     break;
                 default:
-                    game += c;
+                    emojiClipBoard += '⬛';
                     break;
             }
         }
-        let clipboard = `${puzzleName} #${daysSinceFeb17} ${row}/${numTurns}\n\n${game}`;
-        navigator.clipboard.writeText(clipboard).then(function () {
+        navigator.clipboard.writeText(`${puzzleName} #${daysSinceFeb17} ${guessNo}/${numTurns}\n\n${emojiClipBoard}`).then(function () {
             document.getElementById("copy").innerHTML = copiedString;
         }, function (err) {
             document.getElementById("copy").innerHTML = err;
         });
     }
 
-    function gameOver(win, text) {
+    function paintBoard(string, row) {
+        for (let i = 0; i < string.length; i++) {
+            switch (string[i]) {
+                case internalGreen:
+                    document.getElementById(`${row}${i}`).classList.add("green");
+                    break;
+                case internalYellow:
+                    document.getElementById(`${row}${i}`).classList.add("yellow");
+                    break;
+                case internalRed:
+                    document.getElementById(`${row}${i}`).classList.add("red");
+                    break;
+                case ' ':
+                    document.getElementById(`${row}${i}`).classList.add("black");
+                    break;
+                default:
+                    document.getElementById(`${row}${i}`).classList.add("grey");
+                    break;
+            }
+        }
+    }
+
+    function gameOver(win) {
         let copyButton = document.createElement("button");
         copyButton.id = "copy";
         copyButton.onclick = function () {
-            copy(text);
+            copyToClipBoard();
         };
         copyButton.appendChild(document.createTextNode(copyString));
         let title = document.getElementById("title");
@@ -161,7 +197,7 @@
                 title.appendChild(copyButton);
             };
             liveButton.onclick = function () {
-                addRow(answer.length, numTurns, numTurns + 1);
+                addRow(answer, numTurns);
                 numTurns++;
             };
         }
@@ -171,13 +207,11 @@
     let puzzleName = "";
     let winString = `wow good job&nbsp;`;
     let loseOptionString = `do you want to lose&nbsp;`;
-    let loseString = `ok&nbsp;`;
+    let loseString = `ok you lose&nbsp;`;
     let copyString = "copy to clipboard";
     let copiedString = "copied!";
     let keyboardString = "tap for phone keyboard";
 
-    let row = 0;
-    let guess = "";
     let params = new URLSearchParams(location.search);
     let answer = params.get("q");
     if (!answer) {
@@ -186,66 +220,116 @@
         window.history.replaceState({}, '', `${location.pathname}?${params}`);
     }
     answer = atob(answer);
-    let numTurns = answer.length + 1;
-    let board = "";
-    let clip = `${'b'.repeat(answer.length)}\n`;
-    buildBoard(answer.length, numTurns);
+    let internalGrey = 'º';
+    let internalGreen = '¹';
+    let internalYellow = '²';
+    let internalRed = '³';
+    let key = internalGreen.repeat(answer.length);
+    let clipBoard = "";
+    let guess = "";
+    let guessNo = 0;
+    let numTurns = 6;
+
+    buildBoard(answer, numTurns);
 
     if (answer === defaultAnswer)
         puzzleName = `${defaultAnswer}le`;
     else {
-        puzzleName = `${'?'.repeat(answer.length)}le`;
+        puzzleName = `${'_'.repeat(answer.length)}le`;
+    }
+    let clipBoardLine = `${internalGrey.repeat(answer.length)}`;
+    for (let i = 0; i < answer.length; i++) {
+        if (answer[i] === ' ') {
+            clipBoardLine = replaceChar(i, ' ', clipBoardLine);
+            key = replaceChar(i, ' ', key);
+            puzzleName = replaceChar(i, ' ', puzzleName);
+        }
     }
     document.getElementById("title").innerHTML = puzzleName;
 
     document.addEventListener("keydown", function onPress(event) {
-        if (event.key === "Backspace") {
+        if (event.key.length === 1 && event.key !== ' ') {
+            if (guess.length < answer.length) {
+                document.getElementById(`${guessNo.toString()}${guess.length.toString()}`).innerHTML = event.key;
+                guess += event.key.toLowerCase();
+            }
+            for (i = 0; i < answer.length; i++) {
+                if (answer[i] === ' ' && guess.length === i) {
+                    guess += ' ';
+                }
+            }
+        }
+        else if (event.key === "Backspace") {
             guess = guess.slice(0, -1);
+            for (i = 0; i < answer.length; i++) {
+                if (answer[i] === ' ' && guess.length === i) {
+                    guess = guess.slice(0, -1);
+                }
+            }
+            document.getElementById(`${guessNo.toString()}${guess.length}`).innerHTML = "";
         }
         else if (event.key === "Enter") {
-            let mess = guess;
-            let amswer = answer;
-            let mlip = clip;
             if (guess.length === answer.length) {
-                for (let i = 0; i < guess.length; i++) {
-                    if (guess[i] === answer[i]) {
-                        document.getElementById(`${row.toString()}${i}`).classList.add("green");
-                        mess = replaceChar(i, '.', mess);
-                        amswer = replaceChar(i, '.', amswer);
-                        mlip = replaceChar(i, 'g', mlip);
-                    }
-                    else
-                        document.getElementById(`${row.toString()}${i}`).classList.add("grey");
-                }
-                for (let i = 0; i < mess.length; i++) {
-                    for (let j = 0; j < amswer.length; j++) {
-                        if (mess[i] === amswer[j] && mess[i] !== '.') {
-                            document.getElementById(`${row.toString()}${i}`).classList.remove("grey");
-                            document.getElementById(`${row.toString()}${i}`).classList.add("yellow");
-                            mess = replaceChar(i, ',', mess);
-                            amswer = replaceChar(j, ',', amswer);
-                            mlip = replaceChar(i, 'y', mlip);
-                            break;
+                let guessSplit = guess.split(' ');
+                let answerCopy = answer;
+                let answerCopySplit = answerCopy.split(' ');
+                let clipBoardLineCopy = clipBoardLine;
+                let clipBoardLineCopySplit = clipBoardLineCopy.split(' ');
+
+                // green
+                for (let word = 0; word < guessSplit.length; word++) {
+                    for (let letter = 0; letter < guessSplit[word].length; letter++) {
+                        if (guessSplit[word][letter] === answerCopySplit[word][letter] && guessSplit[word][letter] !== ' ') {
+                            guessSplit[word] = replaceChar(letter, internalGreen, guessSplit[word]);
+                            answerCopySplit[word] = replaceChar(letter, internalGreen, answerCopySplit[word]);
+                            clipBoardLineCopySplit[word] = replaceChar(letter, internalGreen, clipBoardLineCopySplit[word]);
                         }
                     }
                 }
-                row++;
-                board += mlip;
-                if (mess === '.'.repeat(answer.length)) {
-                    gameOver(true, board);
+
+                // red
+                for (let word = 0; word < guessSplit.length; word++) {
+                    for (let guessLetter = 0; guessLetter < guessSplit[word].length; guessLetter++) {
+                        if (guessSplit[word][guessLetter] !== ' ' && guessSplit[word][guessLetter] !== internalGreen)
+                            for (let answerLetter = 0; answerLetter < answerCopySplit[word].length; answerLetter++) {
+                                if (guessSplit[word][guessLetter] === answerCopySplit[word][answerLetter]) {
+                                    guessSplit[word] = replaceChar(guessLetter, internalYellow, guessSplit[word]);
+                                    answerCopySplit[word] = replaceChar(answerLetter, internalYellow, answerCopySplit[word]);
+                                    clipBoardLineCopySplit[word] = replaceChar(guessLetter, internalYellow, clipBoardLineCopySplit[word]);
+                                    break;
+                                }
+                            }
+                    }
                 }
-                else if (row === numTurns) {
-                    gameOver(false, board);
+
+                guess = guessSplit.join(' ');
+                answerCopy = answerCopySplit.join(' ');
+                clipBoardLineCopy = clipBoardLineCopySplit.join(' ');
+
+                // yellow
+                for (let i = 0; i < guess.length; i++) {
+                    if (guess[i] !== ' ' && guess[i] !== internalGreen && guess[i] !== internalYellow)
+                        for (let j = 0; j < answerCopy.length; j++) {
+                            if (guess[i] === answerCopy[j]) {
+                                guess = replaceChar(i, internalRed, guess);
+                                answerCopy = replaceChar(j, internalRed, answerCopy);
+                                clipBoardLineCopy = replaceChar(i, internalRed, clipBoardLineCopy);
+                                break;
+                            }
+                        }
+                }
+                paintBoard(clipBoardLineCopy, guessNo.toString());
+                clipBoard += `${clipBoardLineCopy}\n`;
+                guessNo++;
+
+                if (guess === key) {
+                    gameOver(true);
+                }
+                else if (guessNo === numTurns) {
+                    gameOver(false);
                 };
                 guess = "";
             }
-        }
-        else if (event.key.length === 1 && event.key !== " ") {
-            if (guess.length < answer.length)
-                guess += event.key.toLowerCase();
-        }
-        for (let i = 0; i < answer.length; i++) {
-            document.getElementById(`${row.toString()}${i}`).innerHTML = guess[i] ? guess[i] : "";
         }
     });
 </script>
