@@ -1,0 +1,311 @@
+let puzzleName = "";
+const winString = `wow good job&nbsp;`;
+const loseOptionString = `do you want to lose&nbsp;`;
+const loseString = `ok you lose&nbsp;`;
+const copyString = "copy to clipboard";
+const copiedString = "copied!";
+const keyboardString = "tap for phone keyboard";
+
+let params = new URLSearchParams(location.search);
+let answer = params.get("q");
+
+const internalGrey = 'º';
+const internalGreen = '¹';
+const internalYellow = '²';
+const internalRed = '³';
+let key;
+let clipBoard;
+let guess = "";
+let guessNo = 0;
+let numTurns = 6;
+
+let clipboardLine;
+
+if (!answer) {
+    diy();
+}
+else {
+    answer = atob(answer);
+    key = internalGreen.repeat(answer.length);
+    word(answer);
+}
+
+function buildRow(answer, y) {
+    let game = document.getElementById("game");
+    for (let x = 0; x < answer.length; x++) {
+        let span = document.createElement("span");
+        if (answer[x] === ' ') {
+            span.style.setProperty("border", "none");
+        }
+        span.id = (`${y}${x}`);
+        game.appendChild(span);
+        game.style.setProperty("grid-template-rows", `repeat(${y + 1}, 1fr)`);
+        game.style.setProperty("height", `${y + 1}0vmin`);
+    }
+}
+
+function buildBoard(answer) {
+    let game = document.getElementById("game");
+    for (let y = 0; y < numTurns; y++) {
+        buildRow(answer, y);
+    }
+    game.style.setProperty("grid-template-columns", `repeat(${answer.length}, 1fr)`);
+    game.style.setProperty("width", `${answer.length}0vmin`);
+}
+
+function replaceChar(index, char, string) {
+    string = string.split('');
+    string[index] = char;
+    string = string.join('');
+    return string;
+}
+
+function copyEmojiToClipBoard() {
+    let feb17 = new Date(2024, 1, 17);
+    let today = new Date();
+    let daysSinceFeb17 = 1 + Math.round(Math.abs((feb17 - today) / (24 * 60 * 60 * 1000)));
+    let emojiClipBoard = "";
+
+    for (c of clipBoard) {
+        switch (c) {
+            case internalGreen:
+                emojiClipBoard += '🟩';
+                break;
+            case internalYellow:
+                emojiClipBoard += '🟨';
+                break;
+            case internalRed:
+                emojiClipBoard += '🟥';
+                break;
+            case ' ':
+                emojiClipBoard += ' ';
+                break;
+            case '\n':
+                emojiClipBoard += '\n';
+                break;
+            default:
+                emojiClipBoard += '⬛';
+                break;
+        }
+    }
+    navigator.clipboard.writeText(`${puzzleName} #${daysSinceFeb17} ${guessNo}/${numTurns}\n\n${emojiClipBoard}`).then(function () {
+        document.getElementById("copy").innerHTML = copiedString;
+    }, function (err) {
+        document.getElementById("copy").innerHTML = err;
+    });
+}
+
+function paintBoard(string, row) {
+    for (let i = 0; i < string.length; i++) {
+        switch (string[i]) {
+            case internalGreen:
+                document.getElementById(`${row}${i}`).classList.add("green");
+                break;
+            case internalYellow:
+                document.getElementById(`${row}${i}`).classList.add("yellow");
+                break;
+            case internalRed:
+                document.getElementById(`${row}${i}`).classList.add("red");
+                break;
+            case ' ':
+                document.getElementById(`${row}${i}`).classList.add("black");
+                break;
+            default:
+                document.getElementById(`${row}${i}`).classList.add("grey");
+                break;
+        }
+    }
+}
+
+function gameOver(win) {
+    let copyButton = document.createElement("button");
+    copyButton.id = "copy";
+    copyButton.onclick = function () {
+        copyEmojiToClipBoard();
+    };
+    copyButton.appendChild(document.createTextNode(copyString));
+    let title = document.getElementById("title");
+    if (win) {
+        title.innerHTML = winString;
+        title.appendChild(copyButton);
+    }
+    else {
+        title.innerHTML = loseOptionString;
+        let dieButton = document.createElement("button");
+        let span = document.createElement("span");
+        let liveButton = document.createElement("button");
+        dieButton.appendChild(document.createTextNode("yes"));
+        liveButton.appendChild(document.createTextNode("no"));
+        title.appendChild(dieButton);
+        title.appendChild(span);
+        title.appendChild(liveButton);
+        dieButton.onclick = function () {
+            title.innerHTML = loseString;
+            title.appendChild(copyButton);
+        };
+        liveButton.onclick = function () {
+            addRow(answer, numTurns);
+            numTurns++;
+        };
+    }
+}
+
+
+function diyKey(key) {
+    let game = document.getElementById("game");
+    let x = game.lastElementChild ? Number(game.lastElementChild.id) : 0;
+    if (key.length === 1 && (key !== ' ' || guess[guess.length - 1] !== ' ')) {
+        let span = document.createElement("span");
+        if (key === ' ') {
+            span.style.setProperty("border", "none");
+        }
+        guess += key.toLowerCase();
+        span.innerHTML = key;
+        span.id = (`0${x + 1}`);
+        game.appendChild(span);
+        game.style.setProperty("grid-template-columns", `repeat(${x + 1}, 1fr)`);
+        game.style.setProperty("width", `${x + 1}0vmin`);
+    }
+    else if (key === "Backspace") {
+        guess = guess.slice(0, -1);
+        game.removeChild(document.getElementById(`0${x}`))
+        game.style.setProperty("grid-template-columns", `repeat(${x - 1}, 1fr)`);
+        game.style.setProperty("width", `${x - 1}0vmin`);
+    }
+    let titleText = document.createElement("span");
+    titleText.style.setProperty("text-overflow", "ellipsis");
+    titleText.style.setProperty("white-space", "nowrap");
+    titleText.style.setProperty("overflow", "hidden");
+    titleText.innerHTML = `${puzzleName}?q=${btoa(guess.trim())}&nbsp;`;
+    document.getElementById("title").replaceChildren(titleText);
+    let copyButton = document.createElement("button");
+    copyButton.id = "copy";
+    copyButton.onclick = function () {
+        navigator.clipboard.writeText(`${window.location.href}?q=${btoa(guess.trim())}`).then(function () {
+            document.getElementById("copy").innerHTML = copiedString;
+        }, function (err) {
+            document.getElementById("copy").innerHTML = err;
+        });
+    };
+    copyButton.appendChild(document.createTextNode(copyString));
+    title.appendChild(copyButton);
+}
+
+function diy() {
+    document.getElementById("title").innerHTML = "type some stuff";
+    let game = document.getElementById("game");
+    game.style.setProperty("grid-template-rows", `repeat(1, 1fr)`);
+    game.style.setProperty("height", `10vmin`);
+    puzzleName = "diydle";
+    document.addEventListener("keydown", function onPress(event) {
+        diyKey(event.key);
+    });
+}
+
+function wordKey() {
+    if (event.key.length === 1 && event.key !== ' ') {
+        if (guess.length < answer.length) {
+            document.getElementById(`${guessNo.toString()}${guess.length.toString()}`).innerHTML = event.key;
+            guess += event.key.toLowerCase();
+        }
+        for (i = 0; i < answer.length; i++) {
+            if (answer[i] === ' ' && guess.length === i) {
+                guess += ' ';
+            }
+        }
+    }
+    else if (event.key === "Backspace") {
+        guess = guess.slice(0, -1);
+        for (i = 0; i < answer.length; i++) {
+            if (answer[i] === ' ' && guess.length === i) {
+                guess = guess.slice(0, -1);
+            }
+        }
+        document.getElementById(`${guessNo.toString()}${guess.length}`).innerHTML = "";
+    }
+    else if (event.key === "Enter") {
+        if (guess.length === answer.length) {
+            let guessSplit = guess.split(' ');
+            let answerCopy = answer;
+            let answerCopySplit = answerCopy.split(' ');
+            let clipBoardLineCopy = clipBoardLine;
+            let clipBoardLineCopySplit = clipBoardLineCopy.split(' ');
+
+            // green
+            for (let word = 0; word < guessSplit.length; word++) {
+                for (let letter = 0; letter < guessSplit[word].length; letter++) {
+                    if (guessSplit[word][letter] === answerCopySplit[word][letter] && guessSplit[word][letter] !== ' ') {
+                        guessSplit[word] = replaceChar(letter, internalGreen, guessSplit[word]);
+                        answerCopySplit[word] = replaceChar(letter, internalGreen, answerCopySplit[word]);
+                        clipBoardLineCopySplit[word] = replaceChar(letter, internalGreen, clipBoardLineCopySplit[word]);
+                    }
+                }
+            }
+
+            // red
+            for (let word = 0; word < guessSplit.length; word++) {
+                for (let guessLetter = 0; guessLetter < guessSplit[word].length; guessLetter++) {
+                    if (guessSplit[word][guessLetter] !== ' ' && guessSplit[word][guessLetter] !== internalGreen)
+                        for (let answerLetter = 0; answerLetter < answerCopySplit[word].length; answerLetter++) {
+                            if (guessSplit[word][guessLetter] === answerCopySplit[word][answerLetter]) {
+                                guessSplit[word] = replaceChar(guessLetter, internalYellow, guessSplit[word]);
+                                answerCopySplit[word] = replaceChar(answerLetter, internalYellow, answerCopySplit[word]);
+                                clipBoardLineCopySplit[word] = replaceChar(guessLetter, internalYellow, clipBoardLineCopySplit[word]);
+                                break;
+                            }
+                        }
+                }
+            }
+
+            guess = guessSplit.join(' ');
+            answerCopy = answerCopySplit.join(' ');
+            clipBoardLineCopy = clipBoardLineCopySplit.join(' ');
+
+            // yellow
+            for (let i = 0; i < guess.length; i++) {
+                if (guess[i] !== ' ' && guess[i] !== internalGreen && guess[i] !== internalYellow)
+                    for (let j = 0; j < answerCopy.length; j++) {
+                        if (guess[i] === answerCopy[j]) {
+                            guess = replaceChar(i, internalRed, guess);
+                            answerCopy = replaceChar(j, internalRed, answerCopy);
+                            clipBoardLineCopy = replaceChar(i, internalRed, clipBoardLineCopy);
+                            break;
+                        }
+                    }
+            }
+            paintBoard(clipBoardLineCopy, guessNo.toString());
+            clipBoard += `${clipBoardLineCopy}\n`;
+            guessNo++;
+
+            if (guess === key) {
+                gameOver(true);
+            }
+            else if (guessNo === numTurns) {
+                gameOver(false);
+            };
+            guess = "";
+        }
+    }
+}
+
+function word(answer) {
+    buildBoard(answer, numTurns);
+    // if (answer === defaultAnswer)
+    //     puzzleName = `${defaultAnswer}le`;
+    // else {
+    puzzleName = `${'?'.repeat(answer.length)}le`;
+    // }
+    clipBoardLine = `${internalGrey.repeat(answer.length)}`;
+    for (let i = 0; i < answer.length; i++) {
+        if (answer[i] === ' ') {
+            clipBoardLine = replaceChar(i, ' ', clipBoardLine);
+            key = replaceChar(i, ' ', key);
+            puzzleName = replaceChar(i, ' ', puzzleName);
+        }
+    }
+    document.getElementById("title").innerHTML = puzzleName;
+
+    document.addEventListener("keydown", function onPress(event) {
+        wordKey(event.key);
+    });
+}
