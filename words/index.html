@@ -70,6 +70,10 @@
                 darkred 1px,
                 darkred 2px);
     }
+
+    * {
+        touch-action: none;
+    }
 </style>
 
 <body>
@@ -79,86 +83,76 @@
     </div>
     <div id="keyboard">
 
-        <div class="back" onmouseover="backspace()">
+        <div class="back" onpointerover="backspace()">
             <span>&nbsp</span>
         </div>
-        <div onmouseleave="mouseOut()" class="section" id="L">
-            <span onmouseover="mouseOver()" class="letter">a</span>
-            <span onmouseover="mouseOver()" class="letter">b</span>
-            <span onmouseover="mouseOver()" class="letter">c</span>
-            <span onmouseover="mouseOver()" class="letter">d</span>
-            <span onmouseover="mouseOver()" class="letter">e</span>
-            <span onmouseover="mouseOver()" class="letter">f</span>
-            <span onmouseover="mouseOver()" class="letter">g</span>
-            <span onmouseover="mouseOver()" class="letter">h</span>
-            <span onmouseover="mouseOver()" class="letter">i</span>
-            <span onmouseover="mouseOver()" class="letter">j</span>
-            <span onmouseover="mouseOver()" class="letter">k</span>
-            <span onmouseover="mouseOver()" class="letter">l</span>
-            <span onmouseover="mouseOver()" class="letter">m</span>
-            <span onmouseover="mouseOver()" class="letter">n</span>
-            <span onmouseover="mouseOver()" class="letter">o</span>
-            <span onmouseover="mouseOver()" class="letter">p</span>
-            <span onmouseover="mouseOver()" class="letter">q</span>
-            <span onmouseover="mouseOver()" class="letter">r</span>
-            <span onmouseover="mouseOver()" class="letter">s</span>
-            <span onmouseover="mouseOver()" class="letter">t</span>
-            <span onmouseover="mouseOver()" class="letter">u</span>
-            <span onmouseover="mouseOver()" class="letter">v</span>
-            <span onmouseover="mouseOver()" class="letter">w</span>
-            <span onmouseover="mouseOver()" class="letter">x</span>
-            <span onmouseover="mouseOver()" class="letter">y</span>
-            <span onmouseover="mouseOver()" class="letter">z</span>
+        <div onpointerleave="mouseOut()" class="section" id="L">
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">a</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">b</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">c</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">d</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">e</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">f</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">g</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">h</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">i</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">j</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">k</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">l</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">m</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">n</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">o</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">p</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">q</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">r</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">s</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">t</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">u</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">v</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">w</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">x</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">y</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">z</span>
         </div>
-        <span onmouseleave="mouseOut()" class="section" id="R">
-            <span onmouseover="mouseOver()" class="letter">a</span>
-            <span onmouseover="mouseOver()" class="letter">b</span>
-            <span onmouseover="mouseOver()" class="letter">c</span>
-            <span onmouseover="mouseOver()" class="letter">d</span>
-            <span onmouseover="mouseOver()" class="letter">e</span>
-            <span onmouseover="mouseOver()" class="letter">f</span>
-            <span onmouseover="mouseOver()" class="letter">g</span>
-            <span onmouseover="mouseOver()" class="letter">h</span>
-            <span onmouseover="mouseOver()" class="letter">i</span>
-            <span onmouseover="mouseOver()" class="letter">j</span>
-            <span onmouseover="mouseOver()" class="letter">k</span>
-            <span onmouseover="mouseOver()" class="letter">l</span>
-            <span onmouseover="mouseOver()" class="letter">m</span>
-            <span onmouseover="mouseOver()" class="letter">n</span>
-            <span onmouseover="mouseOver()" class="letter">o</span>
-            <span onmouseover="mouseOver()" class="letter">p</span>
-            <span onmouseover="mouseOver()" class="letter">q</span>
-            <span onmouseover="mouseOver()" class="letter">r</span>
-            <span onmouseover="mouseOver()" class="letter">s</span>
-            <span onmouseover="mouseOver()" class="letter">t</span>
-            <span onmouseover="mouseOver()" class="letter">u</span>
-            <span onmouseover="mouseOver()" class="letter">v</span>
-            <span onmouseover="mouseOver()" class="letter">w</span>
-            <span onmouseover="mouseOver()" class="letter">x</span>
-            <span onmouseover="mouseOver()" class="letter">y</span>
-            <span onmouseover="mouseOver()" class="letter">z</span>
+        <span onpointerleave="mouseOut()" class="section" id="R">
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">a</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">b</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">c</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">d</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">e</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">f</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">g</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">h</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">i</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">j</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">k</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">l</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">m</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">n</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">o</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">p</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">q</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">r</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">s</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">t</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">u</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">v</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">w</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">x</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">y</span>
+            <span onpointerdown="pointerDown()" onpointerover="mouseOver()" class="letter">z</span>
 
         </span>
-        <div class="back" onmouseover="backspace()">
+        <div class="back" onpointerover="backspace()">
             <span class="back">&nbsp</span>
         </div>
 
     </div>
-
-    <!-- abcdefghijklmnopqrstuvwxyz
-    <div class="i" onmouseover="mouseOver(this)">
-        a
-    </div>
-    <div onmouseover="mouseOver(this)">
-        b
-    </div>
-    <span id="demo">
-    </span> -->
 </body>
 <script>
-    // const main = document.createElement("div");
-    // para.innerText = "This is a paragraph";
-    // document.body.appendChild(para);
+    function pointerDown() {
+        event.target.releasePointerCapture(event.pointerId);
+    }
     function mouseOut() {
         document.getElementById("wordl").innerHTML += (document.getElementById("wordr").innerHTML);
     }
