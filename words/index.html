@@ -35,7 +35,11 @@
         /* transform: translate(-50%); */
         display: flex;
         flex-direction: column;
-        z-index: 1;
+        opacity: 0%;
+    }
+
+    .column:focus-within {
+        opacity: 100%;
     }
 
     .key {
@@ -48,6 +52,9 @@
         flex-grow: 1;
         flex-basis: 0;
         transition: 100ms;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .key:focus {
@@ -56,6 +63,7 @@
         color: royalblue;
         flex-grow: 2;
         transition: 100ms;
+        z-index: 1;
     }
 
     /* #input {
@@ -87,11 +95,6 @@
         background-color: aquamarine;
         text-decoration: underline;
     } */
-
-    .hidden {
-        /* display: none; */
-        opacity: 0;
-    }
 </style>
 
 <body>
@@ -105,10 +108,15 @@
 </body>
 
 <script>
-    pushCol();
+    let col = pushCol();
+    console.log(col);
+    col.tabIndex = -1;
+    col.focus();
 
     function pushCol() {
-        document.getElementById("keyboard").appendChild(column());
+        let col = column();
+        document.getElementById("keyboard").appendChild(col);
+        return col;
     }
 
     function popCol() {
@@ -137,7 +145,6 @@
         // document.getElementById("word").innerText = document.getElementById("word").innerText.slice(0, Number(event.target.id));
         while (document.getElementById("input2").childElementCount > Number(event.target.id))
             document.getElementById("input2").removeChild(document.getElementById("input2").lastChild);
-        event.target.classList.remove("hidden");
     }
 
     function columnleave() {
@@ -145,7 +152,6 @@
 
         // document.getElementById("word").innerText += document.getElementById("letterbox").innerText;
         document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-        event.target.classList.add("hidden");
     }
 
     function columndown() {
@@ -157,9 +163,11 @@
 
     function columnup() {
         // document.getElementById("letterbox").classList.add("hidden");
-        document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-        document.getElementById("input2").style.transform = "translate(calc(-100% + 30px))";
-        popCol();
+        // document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
+        // document.getElementById("input2").style.transform = "translate(calc(-100% + 30px))";
+        // popCol();
+        console.log(event.target);
+        event.target.blur();
     }
 
     function column() {
