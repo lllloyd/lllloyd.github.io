@@ -173,6 +173,7 @@
         for (i = 97; i <= 122; i++) {
             const key = document.createElement("div");
             key.classList.add("key");
+            key.addEventListener("pointerdown", keydown);
             key.addEventListener("pointerover", keyhover);
             key.innerText = String.fromCharCode(i);
             column.appendChild(key);
