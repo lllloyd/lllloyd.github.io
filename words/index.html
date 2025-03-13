@@ -43,7 +43,7 @@
         border: 2px solid darkgray;
         background-color: lightgreen;
         height: 100%;
-        color: red;
+        color: lightcoral;
         flex-grow: 1;
         flex-basis: 0;
         transition: 100ms;
@@ -51,7 +51,7 @@
 
     .key:focus {
         width: 50px;
-        color: blue;
+        color: lightblue;
         z-index: 1;
         flex-grow: 2;
         transition: 100ms;
@@ -94,8 +94,11 @@
         document.getElementById("keyboard").removeChild(document.getElementById("keyboard").lastChild);
     }
 
-    function keyhover() {
+    function keydown() {
         event.target.releasePointerCapture(event.pointerId);
+    }
+
+    function keyhover() {
         document.getElementById("letterbox").innerText = event.target.innerText;
         event.target.tabIndex = -1;
         event.target.focus();
@@ -131,6 +134,7 @@
         for (i = 97; i <= 122; i++) {
             const key = document.createElement("span");
             key.classList.add("key");
+            key.addEventListener("pointerdown", keydown);
             key.addEventListener("pointerover", keyhover);
             key.innerText = String.fromCharCode(i);
             column.appendChild(key);
