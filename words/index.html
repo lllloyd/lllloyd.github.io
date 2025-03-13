@@ -28,31 +28,29 @@
     #keyboard {
         display: flex;
         flex-direction: row;
-        justify-content: center;
         height: 100%;
-        /* align-items: stretch; */
     }
 
     .column {
         display: flex;
         flex-direction: column;
         border: 2px solid lightgray;
-        /* justify-content: space-around; */
     }
 
     .key {
-        width: 50px;
+        min-width: 25px;
+        width: auto;
         border: 2px solid darkgray;
         background-color: lightgreen;
         height: 100%;
         color: red;
         flex-grow: 1;
-        /* flex-shrink: 1; */
         flex-basis: 0;
         transition: 100ms;
     }
 
     .key:focus {
+        width: 50px;
         color: blue;
         z-index: 1;
         flex-grow: 2;
@@ -61,12 +59,10 @@
 
     #input {
         display: flex;
-        justify-content: center;
     }
 
     #word {
-        background-color: lightblue;
-        border: 5px solid lightcoral;
+        background-color: aquamarine;
     }
 
     #letterbox {
@@ -74,15 +70,9 @@
         text-decoration: underline;
     }
 
-    .backspace {
-        width: 100px;
-        background: repeating-linear-gradient(45deg,
-                firebrick,
-                firebrick 1px,
-                darkred 1px,
-                darkred 2px);
+    .hidden {
+        display: none;
     }
-    
 </style>
 
 <body>
@@ -90,79 +80,63 @@
         <span id="word"></span>
         <span id="letterbox"></span>
     </div>
-    <div id="keyboard">
-        <div class="backspace" onpointerover="backspace()"></div>
-        <div onpointerleave="type()" class="column">
-            <span onpointerover="keyhover()" class="key">a</span>
-            <span onpointerover="keyhover()" class="key">b</span>
-            <span onpointerover="keyhover()" class="key">c</span>
-            <span onpointerover="keyhover()" class="key">d</span>
-            <span onpointerover="keyhover()" class="key">e</span>
-            <span onpointerover="keyhover()" class="key">f</span>
-            <span onpointerover="keyhover()" class="key">g</span>
-            <span onpointerover="keyhover()" class="key">h</span>
-            <span onpointerover="keyhover()" class="key">i</span>
-            <span onpointerover="keyhover()" class="key">j</span>
-            <span onpointerover="keyhover()" class="key">k</span>
-            <span onpointerover="keyhover()" class="key">l</span>
-            <span onpointerover="keyhover()" class="key">m</span>
-            <span onpointerover="keyhover()" class="key">n</span>
-            <span onpointerover="keyhover()" class="key">o</span>
-            <span onpointerover="keyhover()" class="key">p</span>
-            <span onpointerover="keyhover()" class="key">q</span>
-            <span onpointerover="keyhover()" class="key">r</span>
-            <span onpointerover="keyhover()" class="key">s</span>
-            <span onpointerover="keyhover()" class="key">t</span>
-            <span onpointerover="keyhover()" class="key">u</span>
-            <span onpointerover="keyhover()" class="key">v</span>
-            <span onpointerover="keyhover()" class="key">w</span>
-            <span onpointerover="keyhover()" class="key">x</span>
-            <span onpointerover="keyhover()" class="key">y</span>
-            <span onpointerover="keyhover()" class="key">z</span>
-        </div>
-        <span onpointerleave="type()" class="column">
-            <span onpointerover="keyhover()" class="key">a</span>
-            <span onpointerover="keyhover()" class="key">b</span>
-            <span onpointerover="keyhover()" class="key">c</span>
-            <span onpointerover="keyhover()" class="key">d</span>
-            <span onpointerover="keyhover()" class="key">e</span>
-            <span onpointerover="keyhover()" class="key">f</span>
-            <span onpointerover="keyhover()" class="key">g</span>
-            <span onpointerover="keyhover()" class="key">h</span>
-            <span onpointerover="keyhover()" class="key">i</span>
-            <span onpointerover="keyhover()" class="key">j</span>
-            <span onpointerover="keyhover()" class="key">k</span>
-            <span onpointerover="keyhover()" class="key">l</span>
-            <span onpointerover="keyhover()" class="key">m</span>
-            <span onpointerover="keyhover()" class="key">n</span>
-            <span onpointerover="keyhover()" class="key">o</span>
-            <span onpointerover="keyhover()" class="key">p</span>
-            <span onpointerover="keyhover()" class="key">q</span>
-            <span onpointerover="keyhover()" class="key">r</span>
-            <span onpointerover="keyhover()" class="key">s</span>
-            <span onpointerover="keyhover()" class="key">t</span>
-            <span onpointerover="keyhover()" class="key">u</span>
-            <span onpointerover="keyhover()" class="key">v</span>
-            <span onpointerover="keyhover()" class="key">w</span>
-            <span onpointerover="keyhover()" class="key">x</span>
-            <span onpointerover="keyhover()" class="key">y</span>
-            <span onpointerover="keyhover()" class="key">z</span>
-        </span>
-        <div class="backspace" onpointerover="backspace()"></div>
-    </div>
+    <div id="keyboard"></div>
 </body>
+
 <script>
+    pushCol();
+
+    function pushCol() {
+        document.getElementById("keyboard").appendChild(column());
+    }
+
+    function popCol() {
+        document.getElementById("keyboard").removeChild(document.getElementById("keyboard").lastChild);
+    }
+
     function keyhover() {
         event.target.releasePointerCapture(event.pointerId);
-        document.getElementById("letterbox").innerHTML = event.target.innerHTML;
+        document.getElementById("letterbox").innerText = event.target.innerText;
         event.target.tabIndex = -1;
         event.target.focus();
     }
-    function type() {
-        document.getElementById("word").innerHTML += (document.getElementById("letterbox").innerHTML);
+
+    function columnenter() {
+        if (Number(document.getElementById("keyboard").lastChild.id) === Number(event.target.id)) pushCol();
+        else while (Number(document.getElementById("keyboard").lastChild.id) > 1 + Number(event.target.id)) popCol();
+        document.getElementById("word").innerText = document.getElementById("word").innerText.slice(0, Number(event.target.id));
     }
-    function backspace() {
-        document.getElementById("word").innerHTML = document.getElementById("word").innerHTML.slice(0, -2);
+
+    function columnleave() {
+        document.getElementById("word").innerText += document.getElementById("letterbox").innerText;
+    }
+
+    function columndown() {
+        document.getElementById("letterbox").classList.remove("hidden");
+    }
+
+    function columnup() {
+        document.getElementById("letterbox").classList.add("hidden");
+        popCol();
+    }
+
+    function column() {
+        const column = document.createElement("div");
+        column.classList.add("column");
+        column.addEventListener("pointerenter", columnenter);
+        column.addEventListener("pointerleave", columnleave);
+        column.addEventListener("pointerdown", columndown);
+        column.addEventListener("pointerup", columnup);
+        column.id = document.getElementById("keyboard").children.length;
+        for (i = 97; i <= 122; i++) {
+            const key = document.createElement("span");
+            key.classList.add("key");
+            key.addEventListener("pointerover", keyhover);
+            key.innerText = String.fromCharCode(i);
+            column.appendChild(key);
+        }
+        return column;
     }
 </script>
+
 </html>
