@@ -5,180 +5,147 @@
 </head>
 
 <style>
-    html {
-        display: flex;
-        height: 100%;
-        flex-direction: row;
-    }
-
     body {
-        flex-grow: 1;
-        flex-shrink: 1;
-        flex-basis: 0;
-        overflow: hidden;
-        font-family: monospace;
-        white-space: pre-line;
+        margin: 0;
         user-select: none;
         background-color: lightsteelblue;
-        display: flex;
-        margin: 0;
-        flex-direction: column;
-    }
-
-    #keyboard {
-        display: flex;
-        flex-direction: row;
-        height: 100%;
     }
 
     .column {
-        /* transform: translate(-50%); */
         display: flex;
         flex-direction: column;
-        z-index: 1;
+        align-items: center;
     }
 
+    /* .column:focus-within {
+    } */
+
     .key {
-        min-width: 25px;
-        width: auto;
+        height: 15px;
+        width: 15px;
         border: 2px solid darkgray;
+        border-radius: 2px;
+        margin: 2px;
         background-color: lightgray;
-        height: 100%;
         color: lightcoral;
-        flex-grow: 1;
-        flex-basis: 0;
         transition: 100ms;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* animation-name: anim; */
+        /* animation-duration: 3s; */
+        /* animation-fill-mode: forwards; */
+        /* animation: myfirst 5s linear 2s infinite alternate; */
+    }
+
+    @keyframes anim {
+        0% {
+            left: 0px;
+            top: 0px;
+            /* height: 10px; */
+        }
+
+        100% {
+            left: 0px;
+            top: 0px;
+            /* height: 100px; */
+            /* transform: scale(150%, 150%); */
+        }
     }
 
     .key:focus {
-        /* transform: translate(-50%); */
-        width: 50px;
         color: royalblue;
-        flex-grow: 2;
         transition: 100ms;
+        z-index: 1;
+        transform: scale(150%, 150%);
     }
 
-    /* #input {
+    #mouse {
         display: flex;
-    } */
+        height: 100%;
+        align-items: start;
+    }
 
-    #input2 {
+    #past {
         display: flex;
-        position: absolute;
-        transform: translate(-100%);
-        flex-grow: 2;
-        min-width: 10px !important;
     }
 
-    #next {
-        display: flex;
-        position: absolute;
-        transform: translate(200%);
-        flex-grow: 2;
-        min-width: 10px !important;
-        color: lightcoral;
+    #present {
+        /* height: 100%; */
+        display:none;
     }
 
-    /* #word {
-        background-color: aquamarine;
-    } */
-
-    /* #letterbox {
-        background-color: aquamarine;
-        text-decoration: underline;
-    } */
-
-    .hidden {
-        /* display: none; */
-        opacity: 0;
-    }
+    #future {}
 </style>
 
-<body>
-    <!-- <div id="input">
-        <span id="word"></span>
-        <span id="letterbox"></span>
-    </div> -->
-    <div id="input2"></div>
-    <div id="keyboard"></div>
-    <div id="next">...?</div>
+<body onpointermove="pointermove(event)">
+    <div id="mouse">
+        <div id="past"></div>
+        <div id="present"></div>
+        <div id="future"></div>
+    </div>
 </body>
 
 <script>
-    pushCol();
+    let keyHover;
+    document.getElementById("present").appendChild(column());
+    document.getElementById("future").appendChild(key("..?"));
 
-    function pushCol() {
-        document.getElementById("keyboard").appendChild(column());
+    function pointermove(event) {
+        var y = event.clientY - (document.getElementById("future").getBoundingClientRect().height / 2);
+        document.getElementById("past").style.transform = `translate(0, ${y}px)`;
+        document.getElementById("future").style.transform = `translate(0, ${y}px)`;
     }
 
-    function popCol() {
-        document.getElementById("keyboard").removeChild(document.getElementById("keyboard").lastChild);
-    }
-
-    function keyhover() {
-        // document.getElementById("letterbox").innerText = event.target.innerText;
-        event.target.tabIndex = -1;
+    function keypointerover() {
         event.target.focus();
-
-
-        var position = event.target.getBoundingClientRect();
-        var x = position.left;
-        var y = position.top;
-
-        document.getElementById("input2").style.left = x;
-        document.getElementById("input2").style.top = y;
-        document.getElementById("next").style.left = x;
-        document.getElementById("next").style.top = y;
     }
 
-    function columnenter() {
-        while (Number(document.getElementById("keyboard").lastChild.id) > 1 + Number(event.target.id)) popCol();
-
-        // document.getElementById("word").innerText = document.getElementById("word").innerText.slice(0, Number(event.target.id));
-        while (document.getElementById("input2").childElementCount > Number(event.target.id))
-            document.getElementById("input2").removeChild(document.getElementById("input2").lastChild);
-        event.target.classList.remove("hidden");
+    function keypointerfocus() {
+        if (event.target.parentElement.id === "future") {
+            // document.getElementById("present").appendChild(column());
+            // keyHover.parentElement.remove();
+            document.getElementById("present").style.display="block";
+            // document.getElementById("past").appendChild(keyHover.cloneNode(true));
+            // document.getElementById("past").appendChild(keyHover);
+            document.getElementById("past").appendChild(key(keyHover.innerText));
+        }
+        else if (event.target === document.getElementById("past").lastChild) {
+            event.target.remove();
+        }
+        else if (event.target.parentElement.classList.contains("column")) {
+            keyHover = event.target;
+        }
     }
 
-    function columnleave() {
-        while (Number(document.getElementById("keyboard").lastChild.id) <= Number(event.target.id)) pushCol();
-
-        // document.getElementById("word").innerText += document.getElementById("letterbox").innerText;
-        document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-        event.target.classList.add("hidden");
-    }
-
-    function columndown() {
+    function keypointerdown() {
+        // event.target.focus();
         event.target.releasePointerCapture(event.pointerId);
-        // document.getElementById("letterbox").classList.remove("hidden");
-        document.getElementById("input2").style.transform = "translate(-100%)";
-
     }
 
-    function columnup() {
-        // document.getElementById("letterbox").classList.add("hidden");
-        document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-        document.getElementById("input2").style.transform = "translate(calc(-100% + 30px))";
-        popCol();
+    function keypointerup() {
+        // document.activeElement.blur()
+        document.getElementById("present").style.display="none";
+        document.getElementById("past").appendChild(key(keyHover.innerText));
     }
 
     function column() {
         const column = document.createElement("div");
         column.classList.add("column");
-        column.addEventListener("pointerenter", columnenter);
-        column.addEventListener("pointerleave", columnleave);
-        column.addEventListener("pointerdown", columndown);
-        column.addEventListener("pointerup", columnup);
-        column.id = document.getElementById("keyboard").children.length;
-        for (i = 97; i <= 122; i++) {
-            const key = document.createElement("div");
-            key.classList.add("key");
-            key.addEventListener("pointerdown", keydown);
-            key.addEventListener("pointerover", keyhover);
-            key.innerText = String.fromCharCode(i);
-            column.appendChild(key);
-        }
+        for (i = 97; i <= 122; i++) column.appendChild(key(String.fromCharCode(i)));
         return column;
+    }
+
+    function key(innerText) {
+        const key = document.createElement("div");
+        key.classList.add("key");
+        key.addEventListener("pointerover", keypointerover);
+        key.addEventListener("focus", keypointerfocus);
+        key.addEventListener("pointerdown", keypointerdown);
+        key.addEventListener("pointerup", keypointerup);
+        key.tabIndex = -1;
+        key.innerText = innerText;
+        return key;
     }
 </script>
 
