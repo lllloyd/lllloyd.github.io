@@ -14,21 +14,22 @@
     .column {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        height: 100%;
     }
 
     /* .column:focus-within {
     } */
 
     .key {
-        height: 15px;
-        width: 15px;
-        border: 2px solid darkgray;
-        border-radius: 2px;
-        margin: 2px;
+        height: 20px;
+        width: 20px;
+        border: 1px solid darkgray;
+        border-radius: 1px;
+        margin: 1px;
         background-color: lightgray;
         color: lightcoral;
         transition: 100ms;
+        flex-grow: 1;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -71,14 +72,14 @@
     }
 
     #present {
-        /* height: 100%; */
-        display:none;
+        height: 100%;
+        display: none;
     }
 
     #future {}
 </style>
 
-<body onpointermove="pointermove(event)">
+<body onpointermove="pointermove(event)" ontouchmove="pwaify(event)" onselectstart="pwaify(event)">
     <div id="mouse">
         <div id="past"></div>
         <div id="present"></div>
@@ -97,6 +98,10 @@
         document.getElementById("future").style.transform = `translate(0, ${y}px)`;
     }
 
+    function pwaify(event) {
+        event.preventDefault();
+    }
+
     function keypointerover() {
         event.target.focus();
     }
@@ -105,7 +110,7 @@
         if (event.target.parentElement.id === "future") {
             // document.getElementById("present").appendChild(column());
             // keyHover.parentElement.remove();
-            document.getElementById("present").style.display="block";
+            document.getElementById("present").style.display = "block";
             // document.getElementById("past").appendChild(keyHover.cloneNode(true));
             // document.getElementById("past").appendChild(keyHover);
             document.getElementById("past").appendChild(key(keyHover.innerText));
@@ -125,7 +130,7 @@
 
     function keypointerup() {
         // document.activeElement.blur()
-        document.getElementById("present").style.display="none";
+        document.getElementById("present").style.display = "none";
         document.getElementById("past").appendChild(key(keyHover.innerText));
     }
 
