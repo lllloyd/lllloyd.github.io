@@ -28,26 +28,30 @@
     #keyboard {
         display: flex;
         flex-direction: row;
-        height: 100%;
+        /* height: 100%; */
     }
 
     .column {
         /* transform: translate(-50%); */
         display: flex;
         flex-direction: column;
-        opacity: 0%;
+        /* opacity: 0%; */
+        align-items: center;
     }
 
     .column:focus-within {
-        opacity: 100%;
+        /* opacity: 100%; */
     }
 
     .key {
-        min-width: 25px;
-        width: auto;
+        height: 25px;
+        width: 25px;
+        /* width: auto; */
         border: 2px solid darkgray;
+        margin: 2px;
         background-color: lightgray;
-        height: 100%;
+        /* height: 100px; */
+        /* max-height: 100%; */
         color: lightcoral;
         flex-grow: 1;
         flex-basis: 0;
@@ -55,66 +59,151 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        animation-name: myfirst;
+        animation-duration: 3s;
+        /* animation-fill-mode: forwards; */
+        /* animation: myfirst 5s linear 2s infinite alternate; */
     }
+
+    @keyframes myfirst {
+        0% {
+            left: 0px;
+            top: 0px;
+            /* height: 10px; */
+        }
+
+        100% {
+            left: 0px;
+            top: 0px;
+            /* height: 100px; */
+            /* transform: scale(150%, 150%); */
+        }
+    }
+
+    /* .key:in {
+        transform: translate(1000px);
+    } */
 
     .key:focus {
         /* transform: translate(-50%); */
-        width: 50px;
+        /* width: 50px; */
         color: royalblue;
-        flex-grow: 2;
+        /* flex-grow: 2; */
+        /* min-height: 50px; */
         transition: 100ms;
         z-index: 1;
+        transform: scale(150%, 150%);
     }
 
-    /* #input {
+    #mouse {
+        /* position: absolute; */
         display: flex;
-    } */
+        height: 100%;
+        /* align-items: stretch; */
+        align-items: start;
+    }
 
     #input2 {
         display: flex;
-        position: absolute;
-        transform: translate(-100%);
-        flex-grow: 2;
-        min-width: 10px !important;
+        /* flex-grow: 2; */
+        /* min-width: 10px !important; */
+        /* transform: translate(-100%, -50%);
+        position: absolute; */
+    }
+
+    #keyboard {
+        height: 100%;
+        /* transform: translate(0, -50%); */
     }
 
     #next {
-        display: flex;
-        position: absolute;
-        transform: translate(200%);
-        flex-grow: 2;
-        min-width: 10px !important;
-        color: lightcoral;
+        flex-basis: 0;
+        flex-shrink: 1000;
+        /* display: flex; */
+        /* flex-grow: 2; */
+        /* min-width: 10px !important; */
+        /* transform: translate(0%, -50%);
+        position: absolute; */
+        height: auto;
     }
-
-    /* #word {
-        background-color: aquamarine;
-    } */
-
-    /* #letterbox {
-        background-color: aquamarine;
-        text-decoration: underline;
-    } */
 </style>
 
-<body>
-    <!-- <div id="input">
-        <span id="word"></span>
-        <span id="letterbox"></span>
-    </div> -->
-    <div id="input2"></div>
-    <div id="keyboard"></div>
-    <div id="next">...?</div>
+<body onpointermove="mouse_position(event)">
+    <div id="mouse">
+        <div id="input2"></div>
+        <div id="keyboard"></div>
+        <div id="next"></div>
+    </div>
 </body>
 
 <script>
-    let col = pushCol();
-    console.log(col);
-    col.tabIndex = -1;
-    col.focus();
+    // let col = pushCol();
+    // console.log(col);
+    // col.tabIndex = -1;
+    // col.focus();
+    let letterHover;
+
+    document.getElementById("next").appendChild(key("..?"));
+
+
+    function keyhover() {
+        event.target.focus();
+        if (event.target.parentElement.id === "next") {
+            pushCol();
+            letterHover.parentElement.remove();
+            pushKey(letterHover);
+            // document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
+        }
+        else if (event.target === document.getElementById("input2").lastChild) {
+            event.target.remove();
+        }
+        else {
+            letterHover = event.target;
+            // letterHover.id = event.target.parentElement.id;
+        }
+    }
+
+    function mouse_position(e) {
+        //do stuff
+        console.log(e);
+        var x = e.clientX;
+        var y = e.clientY;
+        y = y - (document.getElementById("next").getBoundingClientRect().height / 2);
+        // document.getElementById("mouse").style.left = x;
+        document.getElementById("input2").style.transform = `translate(0, ${y}px)`;
+        document.getElementById("next").style.transform = `translate(0, ${y}px)`;
+    }
+
+    // function columnenter() {
+    //     // while (Number(document.getElementById("keyboard").lastChild.id) > 1 + Number(event.target.id)) popCol();
+    //     while (document.getElementById("input2").childElementCount > Number(event.target.id))
+    //         document.getElementById("input2").removeChild(document.getElementById("input2").lastChild);
+    // }
+
+    // function columnleave() {
+    //     // while (Number(document.getElementById("keyboard").lastChild.id) <= Number(event.target.id)) pushCol();
+    //     document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
+    // }
+
+    function columndown() {
+        event.target.releasePointerCapture(event.pointerId);
+        // document.getElementById("input2").style.transform = "translate(-100%)";
+
+    }
+
+    function columnup() {
+        // document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
+        // document.getElementById("input2").style.transform = "translate(calc(-100% + 30px))";
+        // popCol();
+        console.log(event.target);
+        document.activeElement.blur()
+        letterHover.parentElement.remove();
+        pushKey(letterHover);
+    }
 
     function pushCol() {
-        let col = column();
+        let col = column(document.getElementById("keyboard").children.length);
         document.getElementById("keyboard").appendChild(col);
         return col;
     }
@@ -123,69 +212,30 @@
         document.getElementById("keyboard").removeChild(document.getElementById("keyboard").lastChild);
     }
 
-    function keyhover() {
-        // document.getElementById("letterbox").innerText = event.target.innerText;
-        event.target.tabIndex = -1;
-        event.target.focus();
-
-
-        var position = event.target.getBoundingClientRect();
-        var x = position.left;
-        var y = position.top;
-
-        document.getElementById("input2").style.left = x;
-        document.getElementById("input2").style.top = y;
-        document.getElementById("next").style.left = x;
-        document.getElementById("next").style.top = y;
-    }
-
-    function columnenter() {
-        while (Number(document.getElementById("keyboard").lastChild.id) > 1 + Number(event.target.id)) popCol();
-
-        // document.getElementById("word").innerText = document.getElementById("word").innerText.slice(0, Number(event.target.id));
-        while (document.getElementById("input2").childElementCount > Number(event.target.id))
-            document.getElementById("input2").removeChild(document.getElementById("input2").lastChild);
-    }
-
-    function columnleave() {
-        while (Number(document.getElementById("keyboard").lastChild.id) <= Number(event.target.id)) pushCol();
-
-        // document.getElementById("word").innerText += document.getElementById("letterbox").innerText;
-        document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-    }
-
-    function columndown() {
-        event.target.releasePointerCapture(event.pointerId);
-        // document.getElementById("letterbox").classList.remove("hidden");
-        document.getElementById("input2").style.transform = "translate(-100%)";
-
-    }
-
-    function columnup() {
-        // document.getElementById("letterbox").classList.add("hidden");
-        // document.getElementById("input2").appendChild(document.activeElement.cloneNode(true));
-        // document.getElementById("input2").style.transform = "translate(calc(-100% + 30px))";
-        // popCol();
-        console.log(event.target);
-        event.target.blur();
-    }
-
-    function column() {
+    function column(id) {
         const column = document.createElement("div");
         column.classList.add("column");
-        column.addEventListener("pointerenter", columnenter);
-        column.addEventListener("pointerleave", columnleave);
+        // column.addEventListener("pointerente", columnleave);
         column.addEventListener("pointerdown", columndown);
         column.addEventListener("pointerup", columnup);
-        column.id = document.getElementById("keyboard").children.length;
+        column.id = id;
         for (i = 97; i <= 122; i++) {
-            const key = document.createElement("div");
-            key.classList.add("key");
-            key.addEventListener("pointerover", keyhover);
-            key.innerText = String.fromCharCode(i);
-            column.appendChild(key);
+            column.appendChild(key(String.fromCharCode(i)));
         }
         return column;
+    }
+
+    function pushKey(key) {
+        document.getElementById("input2").appendChild(key);
+    }
+
+    function key(innerText) {
+        const key = document.createElement("div");
+        key.classList.add("key");
+        key.addEventListener("pointerover", keyhover);
+        key.innerText = innerText;
+        key.tabIndex = -1;
+        return key;
     }
 </script>
 
