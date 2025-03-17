@@ -23,13 +23,15 @@
     .key {
         height: 20px;
         width: 20px;
+        flex-grow: 1;
+        flex-basis: 0;
+        min-height: 0;
         border: 1px solid darkgray;
         border-radius: 1px;
         margin: 1px;
         background-color: lightgray;
         color: lightcoral;
         transition: 100ms;
-        flex-grow: 1;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -37,6 +39,30 @@
         /* animation-duration: 3s; */
         /* animation-fill-mode: forwards; */
         /* animation: myfirst 5s linear 2s infinite alternate; */
+
+        &:focus {
+            color: royalblue;
+            transition: 100ms;
+            z-index: 1;
+            /* transform: scale(150%, 150%); */
+            flex-grow: 4 !important;
+
+            &+*+* {
+                flex-grow: 2 !important;
+            }
+
+            &+* {
+                flex-grow: 3 !important;
+            }
+
+            :has(+ &) {
+                flex-grow: 3 !important;
+            }
+
+            :has(+ * + &) {
+                flex-grow: 2 !important;
+            }
+        }
     }
 
     @keyframes anim {
@@ -54,13 +80,6 @@
         }
     }
 
-    .key:focus {
-        color: royalblue;
-        transition: 100ms;
-        z-index: 1;
-        transform: scale(150%, 150%);
-    }
-
     #mouse {
         display: flex;
         height: 100%;
@@ -69,6 +88,7 @@
 
     #past {
         display: flex;
+        transition: 100ms;
     }
 
     #present {
@@ -76,10 +96,13 @@
         display: none;
     }
 
-    #future {}
+    #future {
+        transition: 100ms;
+    }
 </style>
 
-<body onpointermove="pointermove(event)" ontouchmove="pwaify(event)" onselectstart="pwaify(event)">
+<body onpointerover="pointermove(event)" onpointermove="pointermove(event)" ontouchmove="pwaify(event)"
+    onselectstart="pwaify(event)">
     <div id="mouse">
         <div id="past"></div>
         <div id="present"></div>
