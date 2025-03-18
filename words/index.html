@@ -8,29 +8,32 @@
     body {
         margin: 0;
         user-select: none;
-        background-color: lightsteelblue;
+        background-color: pink;
     }
 
     .column {
         display: flex;
         flex-direction: column;
         height: 100%;
+        width: 50px;
+        justify-content: center;
+        align-items: center;
     }
 
     /* .column:focus-within {
     } */
 
     .key {
-        height: 20px;
-        width: 20px;
+        height: 25px;
+        width: 25px;
         flex-grow: 1;
         flex-basis: 0;
         min-height: 0;
-        border: 1px solid darkgray;
-        border-radius: 1px;
-        margin: 1px;
-        background-color: lightgray;
-        color: lightcoral;
+        border: 2px solid lightgray;
+        border-radius: 2px;
+        margin: 2px;
+        background-color: whitesmoke;
+        color: lightblue;
         transition: 100ms;
         display: flex;
         justify-content: center;
@@ -39,31 +42,34 @@
         /* animation-duration: 3s; */
         /* animation-fill-mode: forwards; */
         /* animation: myfirst 5s linear 2s infinite alternate; */
-
-        &:focus {
-            color: royalblue;
-            transition: 100ms;
-            z-index: 1;
-            /* transform: scale(150%, 150%); */
-            flex-grow: 4 !important;
-
-            &+*+* {
-                flex-grow: 2 !important;
-            }
-
-            &+* {
-                flex-grow: 3 !important;
-            }
-
-            :has(+ &) {
-                flex-grow: 3 !important;
-            }
-
-            :has(+ * + &) {
-                flex-grow: 2 !important;
-            }
-        }
     }
+
+    *:has(+*+.key:focus) {
+        flex-grow: 2;
+    }
+
+    *:has(+.key:focus) {
+        flex-grow: 3;
+        transform: scale(125%, 100%);
+    }
+
+    .key:focus {
+        color: lightslategray;
+        transition: 100ms;
+        z-index: 1;
+        transform: scale(150%, 100%);
+        flex-grow: 4;
+    }
+
+    .key:focus+* {
+        flex-grow: 3;
+        transform: scale(125%, 100%);
+    }
+
+    .key:focus+*+* {
+        flex-grow: 2;
+    }
+
 
     @keyframes anim {
         0% {
@@ -98,6 +104,10 @@
 
     #future {
         transition: 100ms;
+    }
+
+    * {
+        touch-action: none;
     }
 </style>
 
@@ -171,10 +181,15 @@
         key.addEventListener("focus", keypointerfocus);
         key.addEventListener("pointerdown", keypointerdown);
         key.addEventListener("pointerup", keypointerup);
-        key.tabIndex = -1;
+        key.tabIndex = 0;
         key.innerText = innerText;
         return key;
     }
+
+    document.addEventListener('touchstart', preventDefault(), { passive: false })
+    document.addEventListener('touchmove', preventDefault(), { passive: false })
+    document.addEventListener('touchend', preventDefault(), { passive: false })
+    document.addEventListener('touchcancel', preventDefault(), { passive: false })
 </script>
 
 </html>
