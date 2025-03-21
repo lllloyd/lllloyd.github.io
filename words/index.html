@@ -6,104 +6,95 @@
 
 <style>
     body {
+        display: flex;
+        align-items: start;
+        height: 100%;
         margin: 0;
         user-select: none;
-        background-color: pink;
+        font-family: "Courier";
+        background-color: beige;
     }
 
     .column {
         display: flex;
         flex-direction: column;
-        height: 100%;
-        width: 50px;
         justify-content: center;
         align-items: center;
+        height: 100%;
+        width: 57px;
     }
-
-    /* .column:focus-within {
-    } */
 
     .key {
-        height: 25px;
-        width: 25px;
-        flex-grow: 1;
-        flex-basis: 0;
-        min-height: 0;
-        border: 2px solid lightgray;
-        border-radius: 2px;
-        margin: 2px;
-        background-color: whitesmoke;
-        color: lightblue;
-        transition: 100ms;
         display: flex;
         justify-content: center;
         align-items: center;
-        /* animation-name: anim; */
-        /* animation-duration: 3s; */
-        /* animation-fill-mode: forwards; */
-        /* animation: myfirst 5s linear 2s infinite alternate; */
+        flex-grow: 1;
+        flex-basis: 0;
+        height: 25px;
+        min-height: 0;
+        width: 25px;
+        margin: 2px;
+        border: 1px solid azure;
+        border-radius: 2px;
+        background-color: bisque;
+        color: black;
+        opacity: 90%;
+        outline: none;
+        transition: 100ms;
     }
 
-    *:has(+*+.key:focus) {
+    .column *:has(+*+.key:focus) {
         flex-grow: 2;
     }
 
-    *:has(+.key:focus) {
+    .column *:has(+.key:focus) {
         flex-grow: 3;
-        transform: scale(125%, 100%);
+        min-height: 25px;
     }
 
-    .key:focus {
+    .column .key:focus {
+        flex-grow: 5;
+        min-height: 50px;
         color: lightslategray;
         transition: 100ms;
-        z-index: 1;
-        transform: scale(150%, 100%);
-        flex-grow: 4;
     }
 
-    .key:focus+* {
+    .column .key:focus+* {
         flex-grow: 3;
-        transform: scale(125%, 100%);
+        min-height: 25px;
     }
 
-    .key:focus+*+* {
+    .column .key:focus+*+* {
         flex-grow: 2;
     }
 
-
-    @keyframes anim {
-        0% {
-            left: 0px;
-            top: 0px;
-            /* height: 10px; */
-        }
-
-        100% {
-            left: 0px;
-            top: 0px;
-            /* height: 100px; */
-            /* transform: scale(150%, 150%); */
-        }
+    #colback {
+        height: 100px;
+        width: 15px;
+        margin-left: -20px;
+        margin-right: -10px;
+        opacity: 75%;
     }
 
-    #mouse {
-        display: flex;
-        height: 100%;
-        align-items: start;
+    #colnext {
+        height: 100px;
+        width: 15px;
+        margin-left: -10px;
+        margin-right: -20px;
+        opacity: 75%;
     }
 
     #past {
         display: flex;
-        transition: 100ms;
     }
 
     #present {
+        display: flex;
         height: 100%;
-        display: none;
     }
 
     #future {
-        transition: 100ms;
+        display: flex;
     }
 
     * {
@@ -111,85 +102,106 @@
     }
 </style>
 
-<body onpointerover="pointermove(event)" onpointermove="pointermove(event)" ontouchmove="pwaify(event)"
-    onselectstart="pwaify(event)">
-    <div id="mouse">
-        <div id="past"></div>
-        <div id="present"></div>
-        <div id="future"></div>
-    </div>
+<body onpointermove="pointermove(event)" onpointerdown="pointerdown(event)" onpointerup="pointerup(event)"
+    onmousedown="mouseDown(event)" onmouseup="mouseUp(event)">
+    <div id="past"></div>
+    <div id="present"></div>
+    <div id="future"></div>
 </body>
 
 <script>
     let keyHover;
-    document.getElementById("present").appendChild(column());
-    document.getElementById("future").appendChild(key("..?"));
+    let mouseDownBool;
+    let past = document.getElementById("past");
+    let present = document.getElementById("present");
+    let future = document.getElementById("future");
+
+    present.appendChild(createKey("<=", "colback"));
+    present.appendChild(createColumn());
+    present.appendChild(createKey("=>", "colnext"));
+
+    document.addEventListener('selectstart', event => event.preventDefault(), { passive: false })
+    document.addEventListener('touchstart', event => event.preventDefault(), { passive: false })
+    document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
+    document.addEventListener('touchend', event => event.preventDefault(), { passive: false })
+    document.addEventListener('touchcancel', event => event.preventDefault(), { passive: false })
+
+    function keyfocus() {
+        present.style.display = "flex";
+
+        if (event.target.id === "colnext") {
+            past.append(createKey(keyHover));
+        }
+        else if (event.target.id === "colback") {
+            past.removeChild(past.lastChild);
+        }
+        else if (event.target.parentElement.id === "past") {
+            let c = past.childElementCount - [...past.children].indexOf(event.target);
+            for (i = 0; i < c - 1; i++) {
+                future.prepend(past.lastChild);
+            }
+            past.removeChild(past.lastChild);
+        }
+        else if (event.target.parentElement.id === "future") {
+            let c = [...future.children].indexOf(event.target);
+            for (i = 0; i < c + 1; i++) {
+                past.append(future.firstChild);
+            }
+            past.removeChild(past.lastChild);
+        }
+        else
+            keyHover = event.target.innerText;
+    }
+
+    function keypointerover(event) {
+        if (event.pointerType === "touch" || event.pointerType === "mouse" && mouseDownBool === true) {
+            event.target.focus();
+        }
+    }
 
     function pointermove(event) {
-        var y = event.clientY - (document.getElementById("future").getBoundingClientRect().height / 2);
-        document.getElementById("past").style.transform = `translate(0, ${y}px)`;
-        document.getElementById("future").style.transform = `translate(0, ${y}px)`;
+        past.style.transform = `translate(0, ${event.clientY - (past.getBoundingClientRect().height / 2)}px)`;
+        document.getElementById("colback").style.transform = `translate(0, ${event.clientY - (document.getElementById("colback").getBoundingClientRect().height / 2)}px)`;
+        document.getElementById("colnext").style.transform = `translate(0, ${event.clientY - (document.getElementById("colnext").getBoundingClientRect().height / 2)}px)`;
+        future.style.transform = `translate(0, ${event.clientY - (future.getBoundingClientRect().height / 2)}px)`;
     }
 
-    function pwaify(event) {
-        event.preventDefault();
-    }
-
-    function keypointerover() {
-        event.target.focus();
-    }
-
-    function keypointerfocus() {
-        if (event.target.parentElement.id === "future") {
-            // document.getElementById("present").appendChild(column());
-            // keyHover.parentElement.remove();
-            document.getElementById("present").style.display = "block";
-            // document.getElementById("past").appendChild(keyHover.cloneNode(true));
-            // document.getElementById("past").appendChild(keyHover);
-            document.getElementById("past").appendChild(key(keyHover.innerText));
-        }
-        else if (event.target === document.getElementById("past").lastChild) {
-            event.target.remove();
-        }
-        else if (event.target.parentElement.classList.contains("column")) {
-            keyHover = event.target;
-        }
-    }
-
-    function keypointerdown() {
-        // event.target.focus();
+    function pointerdown(event) {
         event.target.releasePointerCapture(event.pointerId);
     }
 
-    function keypointerup() {
-        // document.activeElement.blur()
-        document.getElementById("present").style.display = "none";
-        document.getElementById("past").appendChild(key(keyHover.innerText));
+    function pointerup() {
+        if (keyHover) {
+            past.appendChild(createKey(keyHover));
+            present.style.display = "none";
+        }
     }
 
-    function column() {
+    function mouseDown() {
+        mouseDownBool = true;
+    }
+
+    function mouseUp() {
+        mouseDownBool = false;
+    }
+
+    function createColumn() {
         const column = document.createElement("div");
         column.classList.add("column");
-        for (i = 97; i <= 122; i++) column.appendChild(key(String.fromCharCode(i)));
+        for (i = 97; i <= 122; i++) column.appendChild(createKey(String.fromCharCode(i)));
         return column;
     }
 
-    function key(innerText) {
+    function createKey(innerText, id) {
         const key = document.createElement("div");
         key.classList.add("key");
+        key.addEventListener("focus", keyfocus);
         key.addEventListener("pointerover", keypointerover);
-        key.addEventListener("focus", keypointerfocus);
-        key.addEventListener("pointerdown", keypointerdown);
-        key.addEventListener("pointerup", keypointerup);
         key.tabIndex = 0;
         key.innerText = innerText;
+        key.id = id;
         return key;
     }
-
-    document.addEventListener('touchstart', preventDefault(), { passive: false })
-    document.addEventListener('touchmove', preventDefault(), { passive: false })
-    document.addEventListener('touchend', preventDefault(), { passive: false })
-    document.addEventListener('touchcancel', preventDefault(), { passive: false })
 </script>
 
 </html>
